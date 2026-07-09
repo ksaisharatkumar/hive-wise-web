@@ -8,11 +8,11 @@
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
-body{font-family:'Inter',sans-serif;background:#f8fafc;color:#0d121b;overflow-x:hidden}
+body{font-family:'Inter',sans-serif;background:#f8fafc;color:#0d121b;overflow-x:hidden;overflow-y:auto}
 
 /* ── HIVE SECTION ── */
 #hive-section{
-  min-height:100vh;display:flex;flex-direction:column;
+  height:100vh;height:100dvh;flex-shrink:0;display:flex;flex-direction:column;
   align-items:center;justify-content:center;
   position:relative;overflow:hidden;
   background:linear-gradient(160deg,#f8fafc 0%,#f1f5f9 50%,#f8fafc 100%);
@@ -41,10 +41,10 @@ body{font-family:'Inter',sans-serif;background:#f8fafc;color:#0d121b;overflow-x:
 .hdr-cta:hover{background:#b45309;transform:translateY(-1px)}
 
 /* CANVAS */
-#cv{position:relative;z-index:2;width:100%;height:calc(100vh - 60px);margin-top:60px}
+#cv{position:relative;z-index:2;width:100%;flex:1;overflow:hidden}
 
 /* HIVE */
-#hw{position:absolute;top:50%;left:50%;transform:translate(-50%,-55%);cursor:pointer;user-select:none;z-index:2}
+#hw{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);cursor:pointer;user-select:none;z-index:2}
 .pr{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);border-radius:50%;
   border:1.5px solid rgba(217,119,6,0.18);animation:rp 2.8s ease-out infinite;pointer-events:none}
 .pr:nth-child(2){animation-delay:0.93s}
@@ -239,9 +239,55 @@ body{font-family:'Inter',sans-serif;background:#f8fafc;color:#0d121b;overflow-x:
 .cp-txt h4{font-size:13px;font-weight:700;color:#0d121b;margin-bottom:2px}
 .cp-txt p{font-size:12px;color:#626a75;line-height:1.5}
 .cp-txt a{color:#d97706;font-weight:600;text-decoration:none}
+
+/* ── BACK TO TOP ── */
+#btt{
+  position:fixed;bottom:28px;right:24px;z-index:200;
+  width:46px;height:46px;border-radius:50%;
+  background:#d97706;border:none;color:#fff;
+  font-size:20px;cursor:pointer;
+  box-shadow:0 4px 16px rgba(217,119,6,0.35);
+  display:none;align-items:center;justify-content:center;
+  transition:all 0.2s;font-family:inherit;
+}
+#btt.visible{display:flex}
+#btt:hover{background:#b45309;transform:translateY(-2px);box-shadow:0 8px 24px rgba(217,119,6,0.45)}
+
+@media(max-width:768px){
+  #hsv{width:180px !important;height:206px !important}
+  .hxc{width:82px;height:94px}
+  .hico{font-size:15px}
+  .hnm{font-size:7px}
+  .hsb{font-size:6px}
+  .bsv{width:44px !important;height:44px !important}
+  .bnt{font-size:8px;padding:2px 7px}
+}
 @media(max-width:640px){
   .contact-grid{grid-template-columns:1fr;gap:40px}
   .form-row-2{grid-template-columns:1fr}
+}
+
+/* ── BACK TO TOP ── */
+#btt{
+  position:fixed;bottom:28px;right:24px;z-index:200;
+  width:46px;height:46px;border-radius:50%;
+  background:#d97706;border:none;color:#fff;
+  font-size:20px;cursor:pointer;
+  box-shadow:0 4px 16px rgba(217,119,6,0.35);
+  display:none;align-items:center;justify-content:center;
+  transition:all 0.2s;font-family:inherit;
+}
+#btt.visible{display:flex}
+#btt:hover{background:#b45309;transform:translateY(-2px);box-shadow:0 8px 24px rgba(217,119,6,0.45)}
+
+@media(max-width:768px){
+  #hsv{width:180px !important;height:206px !important}
+  .hxc{width:82px;height:94px}
+  .hico{font-size:15px}
+  .hnm{font-size:7px}
+  .hsb{font-size:6px}
+  .bsv{width:44px !important;height:44px !important}
+  .bnt{font-size:8px;padding:2px 7px}
 }
 @media(max-width:640px){
   .pcard{grid-template-columns:1fr;gap:16px}
@@ -249,6 +295,98 @@ body{font-family:'Inter',sans-serif;background:#f8fafc;color:#0d121b;overflow-x:
   .hdr-links{display:none}
   .stats-inner{grid-template-columns:1fr 1fr;gap:24px}
 }
+
+/* -- HIVE AGENT WIDGET -- */
+#hive-agent-btn{
+  position:fixed;bottom:28px;right:80px;z-index:300;
+  width:54px;height:54px;border-radius:50%;
+  background:linear-gradient(135deg,#d97706,#f59e0b);
+  border:none;cursor:pointer;
+  box-shadow:0 4px 20px rgba(217,119,6,0.4);
+  display:flex;align-items:center;justify-content:center;
+  font-size:24px;transition:all 0.25s;
+}
+#hive-agent-btn:hover{transform:scale(1.1)}
+#hive-agent-badge{
+  position:absolute;top:-3px;right:-3px;
+  width:16px;height:16px;border-radius:50%;
+  background:#10ae65;border:2px solid #fff;
+}
+#hive-agent-panel{
+  position:fixed;bottom:94px;right:16px;z-index:300;
+  width:320px;max-width:calc(100vw - 24px);
+  background:#fff;border:1px solid #e2e8f0;
+  border-radius:20px;
+  box-shadow:0 16px 48px rgba(15,23,42,0.18);
+  display:none;flex-direction:column;
+  overflow:hidden;
+  font-family:'Inter',sans-serif;
+}
+#hive-agent-panel.open{display:flex}
+.agent-header{
+  background:linear-gradient(135deg,#d97706,#f59e0b);
+  padding:14px 16px;
+  display:flex;align-items:center;gap:10px;
+  flex-shrink:0;
+}
+.agent-header-icon{font-size:22px;line-height:1;flex-shrink:0}
+.agent-header-title{font-size:14px;font-weight:800;color:#fff;line-height:1.2;display:block}
+.agent-header-sub{font-size:11px;color:rgba(255,255,255,0.75);display:block;margin-top:1px}
+.agent-close{margin-left:auto;background:rgba(255,255,255,0.2);border:none;
+  color:#fff;width:28px;height:28px;border-radius:50%;cursor:pointer;
+  font-size:14px;display:flex;align-items:center;justify-content:center;font-family:inherit}
+.agent-close:hover{background:rgba(255,255,255,0.35)}
+.agent-messages{
+  padding:14px;display:flex;flex-direction:column;gap:10px;
+  max-height:220px;overflow-y:auto;flex-shrink:0;
+}
+.agent-msg{font-size:13px;line-height:1.55;padding:10px 13px;border-radius:12px;max-width:92%}
+.agent-msg.bot{background:#f8fafc;border:1px solid #e2e8f0;color:#0d121b;
+  align-self:flex-start;border-radius:4px 12px 12px 12px}
+.agent-msg.user{background:#d97706;color:#fff;
+  align-self:flex-end;border-radius:12px 4px 12px 12px}
+.agent-results{padding:0 14px 10px;display:flex;flex-direction:column;gap:8px}
+.agent-result-card{
+  background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:12px;
+}
+.arc-top{display:flex;align-items:flex-start;gap:8px;margin-bottom:8px}
+.arc-icon{font-size:20px;flex-shrink:0;line-height:1}
+.arc-name{font-size:13px;font-weight:800;color:#0d121b}
+.arc-why{font-size:11px;color:#626a75;margin-top:2px;line-height:1.4}
+.arc-btns{display:flex;gap:6px;flex-wrap:wrap}
+.arc-btn{font-size:11px;font-weight:700;padding:5px 11px;border-radius:7px;
+  border:1px solid transparent;cursor:pointer;text-decoration:none;
+  display:inline-block;font-family:inherit;transition:all 0.15s;line-height:1.4}
+.arc-btn.primary{background:#d97706;color:#fff;border-color:#d97706}
+.arc-btn.primary:hover{background:#b45309;border-color:#b45309}
+.arc-btn.secondary{background:#fff;color:#475569;border-color:#e2e8f0}
+.arc-btn.secondary:hover{border-color:#d97706;color:#92400e}
+.agent-input-wrap{
+  padding:10px 12px;border-top:1px solid #f1f5f9;
+  display:flex;gap:8px;align-items:center;flex-shrink:0;
+}
+.agent-input{
+  flex:1;border:1.5px solid #e2e8f0;border-radius:10px;
+  padding:9px 12px;font-size:13px;font-family:inherit;
+  outline:none;background:#f8fafc;color:#0d121b;
+  transition:border-color 0.15s;
+}
+.agent-input:focus{border-color:#d97706;background:#fff}
+.agent-send{
+  width:34px;height:34px;border-radius:9px;flex-shrink:0;
+  background:#d97706;border:none;color:#fff;
+  cursor:pointer;font-size:16px;
+  display:flex;align-items:center;justify-content:center;
+  transition:background 0.15s;
+}
+.agent-send:hover{background:#b45309}
+.agent-footer{
+  padding:6px 12px;text-align:center;
+  font-size:10px;color:#c4b5a0;background:#fafaf9;
+  border-top:1px solid #f1f5f9;flex-shrink:0;
+  font-family:'JetBrains Mono',monospace;
+}
+
 </style>
 </head>
 <body>
@@ -266,7 +404,7 @@ body{font-family:'Inter',sans-serif;background:#f8fafc;color:#0d121b;overflow-x:
 </nav>
 
 <!-- ── HIVE SECTION ── -->
-<section id="hive-section">
+<section id="hive-section" style="display:flex;flex-direction:column;">
   <div class="bghex"></div>
   <div class="bg-glow"></div>
   <div id="cv">
@@ -1099,38 +1237,42 @@ function beeSVG(seed){
 
 /* -- POSITIONING -- */
 function gc(){
-  var sec = document.getElementById('hive-section');
-  var rect = sec ? sec.getBoundingClientRect() : {width:window.innerWidth,height:window.innerHeight,top:0};
   var cvEl = document.getElementById('cv');
-  var cvRect = cvEl ? cvEl.getBoundingClientRect() : rect;
-  return {x: cvRect.width/2, y: cvRect.height/2};
+  if(cvEl){
+    var r = cvEl.getBoundingClientRect();
+    return {x: r.width/2, y: r.height/2};
+  }
+  return {x: window.innerWidth/2, y: (window.innerHeight - 60)/2};
 }
 
 function corePos(i,n){
   var a=(i/n)*Math.PI*2-Math.PI/2;
   var c=gc();
-  // Inner ring: fits hex cells (118x136) snug around hive (260px wide)
-  // Hive half-width ~130, hex half ~59 => need ~190 center-to-center min
-  var r=Math.min(195, Math.min(c.x,c.y)*0.42);
-  return {x:c.x+Math.cos(a)*r-54, y:c.y+Math.sin(a)*r-62};
+  // Scale radius to screen - smaller on mobile
+  var hiveR = window.innerWidth < 768 ? 90 : 130;
+  var hexH  = window.innerWidth < 768 ? 47 : 62;
+  var hexW  = window.innerWidth < 768 ? 41 : 54;
+  var r = Math.min(hiveR + (window.innerWidth < 768 ? 82 : 115), Math.min(c.x, c.y) * 0.44);
+  return {x:c.x+Math.cos(a)*r-hexW, y:c.y+Math.sin(a)*r-hexH};
 }
 
 function beePos(i,n){
   var a=(i/n)*Math.PI*2-Math.PI/2;
   var c=gc();
-  // Outer ring must clear inner hex ring:
-  // inner r=195, hex half-diagonal~78 => outer must be > 273
-  // Also must stay inside viewport with margin for bee(58px) + label(~14px)
-  var margin=90; // px from edge
-  var maxR=Math.min(c.x-margin, c.y-margin);
-  // Clamp: min 285 to clear hexes, max based on screen
-  var r=Math.max(Math.min(maxR, 340), 285);
-  // Elliptical: use smaller dim as r, wider for x if room
-  var rx=Math.min(c.x-margin, r);
-  var ry=Math.min(c.y-margin, r);
+  var isMobile = window.innerWidth < 768;
+  // Outer ring: must clear inner hex ring
+  // Mobile: inner r~172, hex diag~65 => outer min ~237
+  // Desktop: inner r~245, hex diag~78 => outer min ~285
+  var minR  = isMobile ? 200 : 265;
+  var margin = isMobile ? 52 : 80;
+  var maxR  = Math.min(c.x - margin, c.y - margin);
+  var r = Math.max(Math.min(maxR, isMobile ? 260 : 340), minR);
+  var rx = Math.min(c.x - margin, r);
+  var ry = Math.min(c.y - margin, r);
+  var beeOff = isMobile ? 22 : 29;
   return {
-    x: c.x + Math.cos(a)*rx - 29,
-    y: c.y + Math.sin(a)*ry - 44  // -44 accounts for name label below bee
+    x: c.x + Math.cos(a)*rx - beeOff,
+    y: c.y + Math.sin(a)*ry - (beeOff + 15)
   };
 }
 
@@ -1362,11 +1504,11 @@ function scrollToSection(){
   var el = document.getElementById(secId);
   if(el){
     setTimeout(function(){
-      el.scrollIntoView({behavior:'smooth', block:'start'});
-      // Highlight the card briefly
+      var top = el.getBoundingClientRect().top + window.scrollY - 72;
+      window.scrollTo({top: top, behavior: 'smooth'});
       el.style.transition = 'box-shadow 0.3s';
       el.style.boxShadow = '0 0 0 3px rgba(217,119,6,0.4), 0 8px 32px rgba(15,23,42,0.12)';
-      setTimeout(function(){ el.style.boxShadow = ''; }, 2000);
+      setTimeout(function(){ el.style.boxShadow = ''; }, 2500);
     }, 300);
   }
 }
@@ -1427,5 +1569,340 @@ function hwResetForm() {
 }
 
 </script>
+
+<button id="btt" onclick="backToTop()" title="Back to top">&#x2191;</button>
+
+<script>
+/* Back to top + scroll listener */
+function backToTop(){
+  window.scrollTo({top:0, behavior:'smooth'});
+  setTimeout(function(){
+    if(!isOpen) openHive();
+    else {
+      var hsv = document.getElementById('hsv');
+      if(hsv){ hsv.style.filter='drop-shadow(0 0 52px rgba(196,154,40,0.65))'; setTimeout(function(){ hsv.style.filter=''; },800); }
+    }
+  }, 700);
+}
+
+function checkBtt(){
+  var btt = document.getElementById('btt');
+  if(!btt) return;
+  var scrolled = window.pageYOffset || document.documentElement.scrollTop || 0;
+  if(scrolled > window.innerHeight * 0.4){
+    btt.classList.add('visible');
+  } else {
+    btt.classList.remove('visible');
+  }
+}
+window.addEventListener('scroll', checkBtt, {passive:true});
+</script>
+
+
+<!-- ── HIVE AGENT ── -->
+<button id="hive-agent-btn" onclick="toggleAgent()" title="Ask HiveWise">
+  <div id="hive-agent-badge"></div>
+  &#x1F41D;
+</button>
+
+<div id="hive-agent-panel">
+  <div class="agent-header">
+    <div class="agent-header-icon">&#x1F41D;</div>
+    <div class="agent-header-text">
+      <div class="agent-header-title">HiveWise Assistant</div>
+      <div class="agent-header-sub">Tell me what you need</div>
+    </div>
+    <button class="agent-close" onclick="toggleAgent()">&#x2715;</button>
+  </div>
+
+  <div class="agent-messages" id="agent-msgs">
+    <div class="agent-msg bot">Hi! Describe what you are looking to do or the challenge you want to solve. I will connect you to the right part of the Hive.</div>
+  </div>
+
+  <div class="agent-results" id="agent-results"></div>
+
+  <div class="agent-input-wrap">
+    <input class="agent-input" id="agent-input" type="text"
+      placeholder="e.g. I need deployment testing..."
+      onkeydown="if(event.key==='Enter') agentSearch()">
+    <button class="agent-send" onclick="agentSearch()">&#x2192;</button>
+  </div>
+  <div class="agent-footer">Powered by HiveWise &#x1F41D;</div>
+</div>
+
+
+<script>
+var agentOpen = false;
+
+var HIVE_KB = [
+  {
+    id:'paios', name:'PAIOS', icon:'&#x1F3ED;',
+    tagline:'Physical AI Operating System for your factory',
+    desc:'Connects every machine, diagnoses faults in seconds, shares solutions across factories. 94% downtime reduction.',
+    url:'paios.html',
+    section:'section-paios',
+    keywords:['factory','machine','downtime','fault','diagnosis','manufacturing','robot','plc','oee','telemetry','sensor','industrial','plant','maintenance','predictive','asset','production','line','equipment','repair']
+  },
+  {
+    id:'scade', name:'SCADE', icon:'&#x1F4A5;',
+    tagline:'Supply Chain Anomaly Detection -- blast radius engine',
+    desc:'Maps supply chain disruptions, surfaces substitutes, ranks fixes in under 2 minutes.',
+    url:'paios.html',
+    section:'section-scade',
+    keywords:['supply chain','supplier','disruption','logistics','parts','delay','shipment','inventory','freight','cargo','blast radius','mitigation','procurement','shortage','vessel','truck','transport','risk']
+  },
+  {
+    id:'friday', name:'Friday by Inspired One', icon:'&#x1F916;',
+    tagline:'Your AI Growth CoWorker',
+    desc:'Creates specialist AI coworkers -- GrowthAnalyst, RevenuePilot, OpsRunner -- for Sales, Marketing, Operations and more.',
+    url:'https://inspiredone.ai/friday',
+    section:'section-friday',
+    keywords:['coworker','assistant','workflow','automate','sales','marketing','operations','productivity','task','ai worker','agent','revenue','growth','business','team','collaborate','office','executive','crm','outreach']
+  },
+  {
+    id:'testfold', name:'Testfold', icon:'&#x1F9EA;',
+    tagline:'Verify the code your AI writes',
+    desc:'AI-powered testing that writes its own tests, self-heals selectors, runs on every PR. Works with GitHub, GitLab, Claude Code, Jenkins.',
+    url:'https://testfold.ai',
+    section:'section-testfold',
+    keywords:['testing','test','qa','quality','verification','code','deployment','bug','ci','cd','pipeline','github','gitlab','selenium','automation','regression','pr','pull request','software','devops','engineer','developer']
+  },
+  {
+    id:'macvaar', name:'Macvaar AI', icon:'&#x2764;',
+    tagline:'22 specialized medical AI agents',
+    desc:'Detects 2000+ cardiovascular diseases and 8+ cancer types. Cervix AI, Lung AI, Cardio AI, Skin AI and more.',
+    url:'https://macvaarai.com',
+    section:'section-macvaar',
+    keywords:['healthcare','medical','health','hospital','patient','cancer','cardio','diagnostic','clinical','doctor','disease','detection','lung','skin','ai health','pharma','wellness','diagnosis']
+  },
+  {
+    id:'taligens', name:'Taligens', icon:'&#x1F91D;',
+    tagline:'Strategy and culture change consulting',
+    desc:'Served 100+ organizations in 40+ countries. Commitment-Based Management. SAP, Oracle, Workday change programs.',
+    url:'https://taligens.com',
+    section:'section-taligens',
+    keywords:['culture','change','people','organization','strategy','leadership','transformation','erp','sap','oracle','workday','human','talent','adoption','resistance','alignment','mindset','behavior','training','hr']
+  },
+  {
+    id:'oip', name:'Open Innovation Partners', icon:'&#x1F4C8;',
+    tagline:'Lean Kaizen and AI digital transformation',
+    desc:'E2E process simplification, startup scouting, AI adoption. Collaboration with Japanese senseis and Silicon Valley VCs.',
+    url:'http://openinnovationpartners.com',
+    section:'section-oip',
+    keywords:['lean','kaizen','process','efficiency','waste','improvement','continuous','innovation','startup','digital transformation','simplification','operations','productivity','ai adoption','consulting','agile','six sigma','value stream']
+  },
+  {
+    id:'iam', name:'IAM Intelligence', icon:'&#x1F4BC;',
+    tagline:'AI readiness, strategy and ethics',
+    desc:'AI readiness roadmaps, algorithmic strategy, ethics and governance frameworks for enterprise AI adoption.',
+    url:'https://iam-intelligence.com',
+    section:'section-iam',
+    keywords:['ai strategy','ai readiness','ethics','governance','algorithm','compliance','policy','responsible ai','regulation','audit','risk','ai consulting','enterprise ai','advisory','framework']
+  },
+  {
+    id:'wx1', name:'WX1', icon:'&#x1F3E2;',
+    tagline:'Sovereign data centres -- Europe',
+    desc:'GDPR-compliant sovereign hosting, secure data centres across Europe. High-availability hybrid-cloud infrastructure.',
+    url:'https://wx1.de/en',
+    section:'section-wx1',
+    keywords:['hosting','infrastructure','server','cloud','data centre','gdpr','europe','germany','sovereign','security','compliance','hosting','colocation','hybrid','network','storage','compute']
+  },
+  {
+    id:'iscott', name:'iScottsberg', icon:'&#x1F30F;',
+    tagline:'Industrial automation -- Singapore and APAC',
+    desc:'SCADA/PLC systems, process control, semiconductor fab automation. Chemical dispensing, electrical/mechanical installations.',
+    url:'https://iscottsberg.com',
+    section:'section-iscott',
+    keywords:['singapore','apac','asia','southeast asia','automation','scada','plc','semiconductor','fab','chemical','industrial control','process control','electrical','mechanical','installation']
+  },
+  {
+    id:'aatek', name:'Aatek', icon:'&#x1F9BE;',
+    tagline:'Robotic automation -- Europe',
+    desc:'Physical AI integration, robotic automation, industrial engineering for demanding factory environments.',
+    url:'https://aatek.de',
+    section:'section-aatek',
+    keywords:['robot','robotics','automation','physical ai','europe','germany','industrial engineering','arm','cobots','machine','assembly','welding','picking','gripping']
+  },
+  {
+    id:'igebra', name:'iGebra.ai', icon:'&#x1F9D2;',
+    tagline:'Kids AI education platform',
+    desc:'EdTech AI making artificial intelligence accessible to the next generation. IT consulting and data science across USA and India.',
+    url:'https://www.igebra.ai',
+    section:'section-igebra',
+    keywords:['education','kids','edtech','school','learning','student','ai literacy','children','curriculum','teach','classroom','stem','coding','india','usa']
+  },
+  {
+    id:'moon', name:'Moon IT Solutions', icon:'&#x1F4BB;',
+    tagline:'Managed IT and cloud -- USA',
+    desc:'Managed IT services, cloud solutions and infrastructure security for enterprise deployments in the United States.',
+    url:'https://moonitsolutions.com',
+    section:'section-moon',
+    keywords:['managed it','cloud','infrastructure','security','helpdesk','network','microsoft','azure','aws','support','it services','usa','backup','monitoring','endpoint']
+  },
+  {
+    id:'aevolan', name:'Aevolan', icon:'&#x26A1;',
+    tagline:'Data engineering and cloud architecture',
+    desc:'Microsoft Fabric, Data Vault 2.0, Azure, Snowflake, PySpark. KODE methodology. Multi-LLM orchestration via Soamed AI.',
+    url:'https://www.aevolantech.com',
+    section:'section-aevolan',
+    keywords:['data engineering','data warehouse','azure','fabric','snowflake','pyspark','lakehouse','etl','pipeline','analytics','cloud architecture','microsoft','data vault','llm','orchestration','databricks']
+  },
+  {
+    id:'synth', name:'Synthesys', icon:'&#x2699;',
+    tagline:'Enterprise application development -- India',
+    desc:'Enterprise application development and systems integration for large-scale deployments across India.',
+    url:'http://www.synthesys.co.in',
+    section:'section-synth',
+    keywords:['enterprise','application','development','integration','software','india','erp','crm','system','implementation','custom','build','deploy']
+  },
+  {
+    id:'brilliqs', name:'Brilliqs', icon:'&#x1F4A1;',
+    tagline:'Product engineering and full-stack development',
+    desc:'Product engineering, full-stack development and digital transformation. Fast delivery, production-ready.',
+    url:'http://www.brilliqs.com',
+    section:'section-brilliqs',
+    keywords:['product','engineering','full stack','frontend','backend','mobile','app','web','react','node','api','mvp','build','develop','startup','digital','india']
+  }
+];
+
+function scorePartner(partner, query){
+  var q = query.toLowerCase();
+  var words = q.split(/\s+/);
+  var score = 0;
+  partner.keywords.forEach(function(kw){
+    if(q.indexOf(kw) >= 0) score += 2;
+    else {
+      words.forEach(function(w){ if(kw.indexOf(w) >= 0 && w.length > 2) score += 1; });
+    }
+  });
+  return score;
+}
+
+function agentSearch(){
+  var input = document.getElementById('agent-input');
+  var query = input.value.trim();
+  if(!query) return;
+
+  // Show user message
+  addAgentMsg(query, 'user');
+  input.value = '';
+
+  // Score all partners
+  var scored = HIVE_KB.map(function(p){ return {p:p, s:scorePartner(p, query)}; });
+  scored.sort(function(a,b){ return b.s - a.s; });
+
+  var top = scored.filter(function(x){ return x.s >= 2; }).slice(0,3);
+
+  var resultsEl = document.getElementById('agent-results');
+  resultsEl.innerHTML = '';
+
+  if(top.length === 0){
+    // No match - direct to contact
+    addAgentMsg('Let us connect you directly with our team -- they will find the right fit for your needs.', 'bot');
+    var card = document.createElement('div');
+    card.className = 'agent-result-card';
+    card.innerHTML =
+      '<div class="arc-top"><div class="arc-icon">&#x1F41D;</div><div><div class="arc-name">Talk to HiveWise</div><div class="arc-why">Our team will match you to the right partner or product personally.</div></div></div>' +
+      '<div class="arc-btns">' +
+        '<a class="arc-btn primary" href="mailto:hive.wise@outlook.com?subject=HiveWise Enquiry&body=Hi, I need help with: ' + encodeURIComponent(query) + '">Email us</a>' +
+        '<a class="arc-btn secondary" href="#contact" onclick="toggleAgent()">Contact form</a>' +
+      '</div>';
+    resultsEl.appendChild(card);
+  } else {
+    var count = top.length === 1 ? 'Here is the best match' : 'Here are the top matches';
+    addAgentMsg(count + ' for your need:', 'bot');
+    top.forEach(function(item){
+      var p = item.p;
+      var card = document.createElement('div');
+      card.className = 'agent-result-card';
+      var visitUrl = p.url;
+      // Build card using DOM (no innerHTML escaping issues)
+      var arcTop = document.createElement('div');
+      arcTop.className = 'arc-top';
+      var iconEl = document.createElement('div');
+      iconEl.className = 'arc-icon';
+      iconEl.innerHTML = p.icon;
+      var infoEl = document.createElement('div');
+      var nameEl = document.createElement('div');
+      nameEl.className = 'arc-name';
+      nameEl.textContent = p.name;
+      var whyEl = document.createElement('div');
+      whyEl.className = 'arc-why';
+      whyEl.textContent = p.tagline;
+      infoEl.appendChild(nameEl);
+      infoEl.appendChild(whyEl);
+      arcTop.appendChild(iconEl);
+      arcTop.appendChild(infoEl);
+      card.appendChild(arcTop);
+      var arcBtns = document.createElement('div');
+      arcBtns.className = 'arc-btns';
+      var visitBtn = document.createElement('a');
+      visitBtn.className = 'arc-btn primary';
+      visitBtn.href = visitUrl;
+      visitBtn.target = '_blank';
+      visitBtn.textContent = 'Visit ' + p.name;
+      arcBtns.appendChild(visitBtn);
+      var connectBtn = document.createElement('button');
+      connectBtn.className = 'arc-btn secondary';
+      connectBtn.textContent = 'Connect via HiveWise';
+      (function(pname) {
+        connectBtn.onclick = function() {
+          toggleAgent();
+          setTimeout(function() {
+            var contact = document.getElementById('contact');
+            if(contact) { var top = contact.getBoundingClientRect().top + window.scrollY - 72; window.scrollTo({top:top,behavior:'smooth'}); }
+            setTimeout(function() {
+              var sel = document.getElementById('hw-interest');
+              if(!sel) return;
+              var first = pname.toLowerCase().split(' ')[0];
+              for(var j=0; j<sel.options.length; j++) {
+                if(sel.options[j].text.toLowerCase().indexOf(first) >= 0) { sel.selectedIndex=j; break; }
+              }
+            }, 600);
+          }, 300);
+        };
+      })(p.name);
+      arcBtns.appendChild(connectBtn);
+      card.appendChild(arcBtns);
+      resultsEl.appendChild(card);
+    });
+    // Reset option
+    var reset = document.createElement('div');
+    reset.style.cssText = 'text-align:center;padding-top:4px';
+    reset.innerHTML = '<button onclick="agentReset()" style="background:none;border:none;font-size:11px;color:#d97706;cursor:pointer;font-family:inherit;font-weight:600;">Ask another question &#x2192;</button>';
+    resultsEl.appendChild(reset);
+  }
+}
+
+function addAgentMsg(text, type){
+  var msgs = document.getElementById('agent-msgs');
+  var d = document.createElement('div');
+  d.className = 'agent-msg ' + type;
+  d.innerHTML = text;
+  msgs.appendChild(d);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+function agentReset(){
+  document.getElementById('agent-msgs').innerHTML = '<div class="agent-msg bot">What else can I help you find?</div>';
+  document.getElementById('agent-results').innerHTML = '';
+  document.getElementById('agent-input').focus();
+}
+
+function toggleAgent(){
+  var panel = document.getElementById('hive-agent-panel');
+  if(!agentOpen){
+    panel.style.display = 'flex';
+    setTimeout(function(){ panel.classList.add('open'); },10);
+    document.getElementById('agent-input').focus();
+    agentOpen = true;
+  } else {
+    panel.classList.remove('open');
+    setTimeout(function(){ panel.style.display = 'none'; },250);
+    agentOpen = false;
+  }
+}
+</script>
+
 </body>
 </html>
