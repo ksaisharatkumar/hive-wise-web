@@ -1261,7 +1261,8 @@ function CY(){ return CH()/2; }
 /* ADAPTIVE SIZES based on actual screen */
 function S(){
   var w=SW();
-  if(w<=480)  return {hHW:65,hHH:74,hexW:72,hexH:82,hexHW:36,hexHH:41,bHW:19,lH:14,svgW:130,svgH:149};
+  if(w<=420)  return {hHW:55,hHH:63,hexW:64,hexH:74,hexHW:32,hexHH:37,bHW:17,lH:12,svgW:110,svgH:126};
+  if(w<=480)  return {hHW:65,hHH:74,hexW:70,hexH:80,hexHW:35,hexHH:40,bHW:18,lH:13,svgW:130,svgH:149};
   if(w<=768)  return {hHW:75,hHH:86,hexW:78,hexH:88,hexHW:39,hexHH:44,bHW:21,lH:15,svgW:150,svgH:172};
   return       {hHW:80,hHH:91,hexW:82,hexH:94,hexHW:41,hexHH:47,bHW:22,lH:16,svgW:160,svgH:183};
 }
@@ -1281,16 +1282,17 @@ function positionHive(){
 /* RING RADII */
 function IR(){
   var s=S();
-  var r=s.hHH+18+s.hexHH;
-  var max=Math.min(CX()-s.hexHW-8, CY()-s.hexHH-8);
-  return Math.max(Math.min(r,max),110);
+  var r=s.hHH+16+s.hexHH;
+  var maxR=Math.min(CX()-s.hexHW-6, CY()-s.hexHH-6);
+  return Math.max(Math.min(r,maxR),90);
 }
 function OR(){
   var s=S(), ir=IR();
   var diag=Math.sqrt(s.hexW*s.hexW+s.hexH*s.hexH)/2;
-  var minR=ir+diag+10;
-  var max=Math.min(CX()-s.bHW-6, CY()-s.bHW-6-s.lH);
-  return Math.max(Math.min(Math.max(minR,minR),max),minR);
+  var minR=ir+diag+8;
+  // ALWAYS cap at screen edge - never clip
+  var maxR=Math.min(CX()-s.bHW-4, CY()-s.bHW-4);
+  return Math.min(Math.max(minR,150), maxR);
 }
 
 /* ELEMENT POSITIONS */
