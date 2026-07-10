@@ -8,7 +8,7 @@
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
-body{font-family:'Inter',sans-serif;background:#f8fafc;color:#0d121b;overflow-x:hidden}
+body{font-family:'Inter',sans-serif;background:#f8fafc;color:#0d121b;overflow-x:hidden;display:flex;flex-direction:column}
 
 /* NAV */
 .hdr{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(248,250,252,0.95);backdrop-filter:blur(12px);border-bottom:1px solid #e2e8f0;display:flex;align-items:center;justify-content:space-between;padding:0 24px;height:60px}
@@ -22,13 +22,13 @@ body{font-family:'Inter',sans-serif;background:#f8fafc;color:#0d121b;overflow-x:
 @media(max-width:600px){.hdr-links{display:none}.hdr{padding:0 14px}}
 
 /* HIVE SECTION */
-#hive-section{position:relative;width:100%;height:100svh;height:100dvh;overflow:hidden;background:linear-gradient(160deg,#f8fafc 0%,#f1f5f9 50%,#f8fafc 100%)}
+#hive-section{position:relative;width:100%;overflow:hidden;background:linear-gradient(160deg,#f8fafc 0%,#f1f5f9 50%,#f8fafc 100%);flex-shrink:0}
 .bghex{position:absolute;inset:0;opacity:0.04;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='104'%3E%3Cpath d='M30 2L58 18L58 52L30 68L2 52L2 18Z' fill='none' stroke='%23f59e0b' stroke-width='1.5'/%3E%3C/svg%3E");background-size:60px 104px;pointer-events:none;z-index:0}
 .bg-glow{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(245,158,11,0.07) 0%,transparent 70%);pointer-events:none;z-index:0}
 #cv{position:absolute;left:0;right:0;top:60px;bottom:0;z-index:2;overflow:hidden}
 #hw{position:absolute;cursor:pointer;user-select:none;z-index:3;transform:translate(-50%,-50%)}
 #hw:hover #hsv{filter:drop-shadow(0 0 40px rgba(196,154,40,0.55)) !important}
-.pr{position:absolute;top:0;left:0;border-radius:50%;border:1.5px solid rgba(217,119,6,0.2);animation:rp 2.8s ease-out infinite;pointer-events:none;transform:translate(-50%,-50%)}
+.pr{position:absolute;border-radius:50%;border:1.5px solid rgba(217,119,6,0.2);animation:rp 2.8s ease-out infinite;pointer-events:none;transform:translate(-50%,-50%);left:50%;top:44%}
 .pr:nth-child(2){animation-delay:0.93s}.pr:nth-child(3){animation-delay:1.86s}
 @keyframes rp{0%{width:140px;height:140px;opacity:0.6}100%{width:480px;height:480px;opacity:0}}
 #hint{position:absolute;bottom:24px;left:50%;transform:translateX(-50%);font-size:12px;color:#92400e;font-family:'JetBrains Mono',monospace;letter-spacing:0.08em;white-space:nowrap;transition:opacity 0.4s;display:flex;align-items:center;gap:8px;background:rgba(254,243,199,0.9);border:1px solid rgba(217,119,6,0.2);padding:7px 16px;border-radius:100px;z-index:5}
@@ -1415,11 +1415,12 @@ function resetHive(){
 }
 
 function rebuildAll(){
+  setHiveHeight();
   if(isOpen){ resetHive(); setTimeout(function(){ positionHive(); setTimeout(openHive,200); },400); }
   else{ positionHive(); }
 }
 window.addEventListener('resize',rebuildAll);
-window.addEventListener('orientationchange',function(){ setTimeout(rebuildAll,500); });
+window.addEventListener('orientationchange',function(){ setTimeout(function(){ setHiveHeight(); rebuildAll(); },500); });
 
 /* MODAL */
 var SMAP={mfg:'section-mfg',scade:'section-scade',wisdom:'section-wisdom',agents:'section-agents',conn:'section-conn',fridayhex:'section-friday',wx1i:'section-wx1i',friday:'section-friday',iam:'section-iam',macvaar:'section-macvaar',oip:'section-oip',taligens:'section-taligens',igebra:'section-igebra',moon:'section-moon',iscott:'section-iscott',wx1:'section-wx1',aatek:'section-aatek',synth:'section-synth',brilliqs:'section-brilliqs',testfold:'section-testfold',aevolan:'section-aevolan'};
@@ -1953,10 +1954,21 @@ document.querySelector('.hdr-logo').addEventListener('click', function(){
 });
 
 
+/* SET HIVE SECTION HEIGHT */
+function setHiveHeight(){
+  var sec = document.getElementById('hive-section');
+  if(sec) sec.style.height = window.innerHeight + 'px';
+}
+
 /* INIT */
 window.addEventListener('DOMContentLoaded',function(){
+  setHiveHeight();
   positionHive();
   build();
+});
+
+window.addEventListener('resize', function(){
+  setHiveHeight();
 });
 </script>
 </body>
