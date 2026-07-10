@@ -12,7 +12,7 @@ body{font-family:'Inter',sans-serif;background:#f8fafc;color:#0d121b;overflow-x:
 
 /* ── HIVE SECTION ── */
 #hive-section{
-  height:100vh;height:100dvh;flex-shrink:0;
+  height:100svh;height:100dvh;flex-shrink:0;
   position:relative;overflow:hidden;
   background:linear-gradient(160deg,#f8fafc 0%,#f1f5f9 50%,#f8fafc 100%);
 }
@@ -40,7 +40,7 @@ body{font-family:'Inter',sans-serif;background:#f8fafc;color:#0d121b;overflow-x:
 .hdr-cta:hover{background:#b45309;transform:translateY(-1px)}
 
 /* CANVAS */
-#cv{position:absolute;inset:0;padding-top:60px;z-index:2;overflow:hidden;}
+#cv{position:absolute;left:0;right:0;top:60px;bottom:0;z-index:2;overflow:hidden;}
 
 /* HIVE */
 #hw{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);cursor:pointer;user-select:none;z-index:2}
@@ -253,7 +253,7 @@ body{font-family:'Inter',sans-serif;background:#f8fafc;color:#0d121b;overflow-x:
 #btt:hover{background:#b45309;transform:translateY(-2px);box-shadow:0 8px 24px rgba(217,119,6,0.45)}
 
 @media(max-width:768px){
-  #hsv{width:180px !important;height:206px !important}
+  #hsv{width:160px !important;height:183px !important}
   .hxc{width:82px;height:94px}
   .hico{font-size:15px}
   .hnm{font-size:7px}
@@ -280,7 +280,7 @@ body{font-family:'Inter',sans-serif;background:#f8fafc;color:#0d121b;overflow-x:
 #btt:hover{background:#b45309;transform:translateY(-2px);box-shadow:0 8px 24px rgba(217,119,6,0.45)}
 
 @media(max-width:768px){
-  #hsv{width:180px !important;height:206px !important}
+  #hsv{width:160px !important;height:183px !important}
   .hxc{width:82px;height:94px}
   .hico{font-size:15px}
   .hnm{font-size:7px}
@@ -1251,43 +1251,66 @@ function beeSVG(seed){
 
 /* -- POSITIONING -- */
 function gc(){
-  var cvEl = document.getElementById('cv');
-  if(cvEl){
-    var w = cvEl.offsetWidth  || cvEl.clientWidth  || window.innerWidth;
-    var h = cvEl.offsetHeight || cvEl.clientHeight || (window.innerHeight - 60);
-    return {x: w/2, y: h/2};
-  }
-  return {x: window.innerWidth/2, y: (window.innerHeight - 60)/2};
+  // Use live window.innerHeight - most reliable on mobile
+  // Subtract nav height (60px)
+  var w = window.innerWidth;
+  var h = window.innerHeight - 60;
+  return {x: w/2, y: h/2};
 }
 
 function corePos(i,n){
-  var a=(i/n)*Math.PI*2-Math.PI/2;
-  var c=gc();
-  // Scale radius to screen - smaller on mobile
-  var hiveR = window.innerWidth < 768 ? 90 : 130;
-  var hexH  = window.innerWidth < 768 ? 47 : 62;
-  var hexW  = window.innerWidth < 768 ? 41 : 54;
-  var r = Math.min(hiveR + (window.innerWidth < 768 ? 82 : 115), Math.min(c.x, c.y) * 0.44);
-  return {x:c.x+Math.cos(a)*r-hexW, y:c.y+Math.sin(a)*r-hexH};
+  var a = (i/n)*Math.PI*2 - Math.PI/2;
+  var isMobile = window.innerWidth < 768;
+  var cx = window.innerWidth / 2;
+  var cy = (window.innerHeight - 60) / 2;
+  var hexHalfW = isMobile ? 41 : 54;
+  var hexHalfH = isMobile ? 47 : 62;
+  // hive SVG half dimensions
+  var hiveHW = isMobile ? 80 : 120;
+  var hiveHH = isMobile ? 91 : 137;
+  // Inner ring r = clear hive + gap + hex half
+  // Constrained so hex stays inside canvas
+  var rByHive = Math.max(hiveHW, hiveHH) + 12 + Math.max(hexHalfW, hexHalfH);
+  var maxRX = cx - hexHalfW - 6;
+  var maxRY = cy - hexHalfH - 6;
+  var maxR = Math.min(maxRX, maxRY);
+  var r = Math.min(rByHive, maxR);
+  r = Math.max(r, 120); // absolute minimum
+  return {
+    x: cx + Math.cos(a)*r - hexHalfW,
+    y: cy + Math.sin(a)*r - hexHalfH
+  };
 }
 
 function beePos(i,n){
-  var a=(i/n)*Math.PI*2-Math.PI/2;
-  var c=gc();
+  var a = (i/n)*Math.PI*2 - Math.PI/2;
   var isMobile = window.innerWidth < 768;
-  // Outer ring: must clear inner hex ring
-  // Mobile: inner r~172, hex diag~65 => outer min ~237
-  // Desktop: inner r~245, hex diag~78 => outer min ~285
-  var minR  = isMobile ? 200 : 265;
-  var margin = isMobile ? 52 : 80;
-  var maxR  = Math.min(c.x - margin, c.y - margin);
-  var r = Math.max(Math.min(maxR, isMobile ? 260 : 340), minR);
-  var rx = Math.min(c.x - margin, r);
-  var ry = Math.min(c.y - margin, r);
-  var beeOff = isMobile ? 22 : 29;
+  var cx = window.innerWidth / 2;
+  var cy = (window.innerHeight - 60) / 2;
+  var beeHalf = isMobile ? 22 : 29;
+  var labelH = 16;
+  var margin = beeHalf + 8;
+  // Max radius the screen allows
+  var maxRX = cx - margin;
+  var maxRY = cy - margin - labelH;
+  // Outer ring must clear inner ring + hex diagonal
+  // Inner r from corePos: roughly max(hiveHalf+hexHalf+12, but capped by canvas)
+  var hiveHW = isMobile ? 80 : 120;
+  var hiveHH = isMobile ? 91 : 137;
+  var hexHalfW = isMobile ? 41 : 54;
+  var hexHalfH = isMobile ? 47 : 62;
+  var innerR = Math.min(
+    Math.max(hiveHW, hiveHH) + 12 + Math.max(hexHalfW, hexHalfH),
+    Math.min(cx - hexHalfW - 6, cy - hexHalfH - 6)
+  );
+  var hexDiag = Math.sqrt(hexHalfW*hexHalfW + hexHalfH*hexHalfH);
+  var minOuterR = innerR + hexDiag + 8;
+  // If minOuterR exceeds maxR, shrink: use midpoint between innerR and maxR
+  var rx = Math.min(Math.max(minOuterR, isMobile ? 210 : 270), maxRX);
+  var ry = Math.min(Math.max(minOuterR, isMobile ? 210 : 270), maxRY);
   return {
-    x: c.x + Math.cos(a)*rx - beeOff,
-    y: c.y + Math.sin(a)*ry - (beeOff + 15)
+    x: cx + Math.cos(a)*rx - beeHalf,
+    y: cy + Math.sin(a)*ry - (beeHalf + labelH)
   };
 }
 
@@ -1300,7 +1323,7 @@ function build(){
     var el=document.createElement('div');
     el.className='hxc'; el.id='hx-'+p.id;
     el.innerHTML='<div class="hxi"><div class="hico">'+p.icon+'</div><div class="hnm">'+p.name+'</div><div class="hsb">'+p.sub+'</div></div>';
-    el.style.left=(c.x-59)+'px'; el.style.top=(c.y-68)+'px';
+    el.style.left=(window.innerWidth/2-54)+'px'; el.style.top=((window.innerHeight-60)/2-62)+'px';
     el.onclick=function(e){e.stopPropagation();oM(p.id);};
     cv.appendChild(el);
   });
@@ -1308,7 +1331,7 @@ function build(){
   PARTNERS.forEach(function(p,i){
     var el=document.createElement('div');
     el.className='bep'; el.id='bp-'+p.id;
-    el.style.left=(c.x-29)+'px'; el.style.top=(c.y-34)+'px';
+    el.style.left=(window.innerWidth/2-29)+'px'; el.style.top=((window.innerHeight-60)/2-34)+'px';
     el.style.animationDelay=(Math.random()*2.5)+'s';
     el.innerHTML='<div class="bnt">'+p.name+'</div>'+beeSVG(i);
     el.onclick=function(e){e.stopPropagation();oM(p.id);};
@@ -1375,14 +1398,15 @@ function resetHive(){
   isOpen=false;
   document.getElementById('hint').classList.remove('hid');
   document.getElementById('rb').classList.remove('sh');
-  var c=gc();
+  var cx = window.innerWidth/2;
+  var cy = (window.innerHeight-60)/2;
   CORE.forEach(function(p){
     var el=document.getElementById('hx-'+p.id);
     el.classList.remove('bl');
     setTimeout(function(){
       el.style.transition='none';
-      el.style.left=(c.x-54)+'px';
-      el.style.top=(c.y-62)+'px';
+      el.style.left=(cx-54)+'px';
+      el.style.top=(cy-62)+'px';
     }, 300);
   });
   PARTNERS.forEach(function(p){
@@ -1390,8 +1414,8 @@ function resetHive(){
     el.classList.remove('sc');
     setTimeout(function(){
       el.style.transition='none';
-      el.style.left=(c.x-29)+'px';
-      el.style.top=(c.y-44)+'px';
+      el.style.left=(cx-29)+'px';
+      el.style.top=(cy-44)+'px';
     }, 300);
   });
 }
@@ -1486,10 +1510,20 @@ function cM(){document.getElementById('mbd').classList.remove('op');document.bod
 function cMBd(e){if(e.target===document.getElementById('mbd')) cM();}
 document.addEventListener('keydown',function(e){if(e.key==='Escape') cM();});
 
-window.addEventListener('load',function(){ requestAnimationFrame(function(){ setTimeout(build, 100); }); });
-window.addEventListener('resize',function(){
+window.addEventListener('DOMContentLoaded',function(){
+  // Build immediately so positions are ready
+  requestAnimationFrame(function(){ build(); });
+});
+// Also rebuild on first open in case layout shifted
+var builtOnce = false;
+var _origOpenHive = null;
+window.addEventListener('resize', function(){
   if(!isOpen) return;
-  resetHive(); setTimeout(openHive,120);
+  resetHive(); setTimeout(openHive, 150);
+});
+window.addEventListener('orientationchange', function(){
+  if(!isOpen) return;
+  resetHive(); setTimeout(openHive, 400);
 });
 
 var CURRENT_KEY = null;
@@ -1917,6 +1951,49 @@ function toggleAgent(){
     agentOpen = false;
   }
 }
+</script>
+
+
+<script>
+// DEBUG OVERLAY - shows viewport and position data
+function showDebug(){
+  var existing = document.getElementById('dbg');
+  if(existing){ existing.remove(); return; }
+  var vmin = Math.min(window.innerWidth, window.innerHeight-60);
+  var isMobile = window.innerWidth < 768;
+  var hiveHW = isMobile ? 80 : 120;
+  var hiveHH = isMobile ? 91 : 137;
+  var hexHalfW2 = isMobile ? 41 : 54;
+  var hexHalfH2 = isMobile ? 47 : 62;
+  var innerR = Math.min(Math.max(hiveHW,hiveHH)+12+Math.max(hexHalfW2,hexHalfH2), Math.min(window.innerWidth/2-hexHalfW2-6,(window.innerHeight-60)/2-hexHalfH2-6));
+  var hexDiag2 = Math.sqrt(hexHalfW2*hexHalfW2+hexHalfH2*hexHalfH2);
+  var outerR = Math.min(Math.max(innerR+hexDiag2+8, isMobile?210:270), Math.min(window.innerWidth/2-30,(window.innerHeight-60)/2-46));
+  var cv = document.getElementById('cv');
+  var cvRect = cv ? cv.getBoundingClientRect() : {};
+  var d = document.createElement('div');
+  d.id = 'dbg';
+  d.style.cssText = 'position:fixed;top:70px;left:0;right:0;z-index:9999;background:rgba(0,0,0,0.85);color:#0f0;font-family:monospace;font-size:11px;padding:10px 14px;line-height:1.8;';
+  d.innerHTML = 
+    'window.innerWidth: <b>' + window.innerWidth + '</b><br>' +
+    'window.innerHeight: <b>' + window.innerHeight + '</b><br>' +
+    'innerHeight-60: <b>' + (window.innerHeight-60) + '</b><br>' +
+    'vmin: <b>' + Math.round(vmin) + '</b><br>' +
+    'isMobile: <b>' + isMobile + '</b><br>' +
+    'innerRing r: <b>' + Math.round(innerR) + 'px</b><br>' +
+    'outerRing r: <b>' + Math.round(outerR) + 'px</b><br>' +
+    'cv.offsetW: <b>' + (cv ? cv.offsetWidth : 'null') + '</b><br>' +
+    'cv.offsetH: <b>' + (cv ? cv.offsetHeight : 'null') + '</b><br>' +
+    'cv.top: <b>' + Math.round(cvRect.top||0) + ' cv.h: ' + Math.round(cvRect.height||0) + '</b><br>' +
+    '<span style="color:#ff0">Tap again to close</span>';
+  document.body.appendChild(d);
+}
+// Triple-tap the hive title to show debug
+var tapCount = 0;
+document.querySelector('.hdr-logo').addEventListener('click', function(){
+  tapCount++;
+  if(tapCount >= 3){ showDebug(); tapCount=0; }
+  setTimeout(function(){ tapCount=0; }, 1000);
+});
 </script>
 
 </body>
