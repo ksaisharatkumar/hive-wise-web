@@ -3,127 +3,121 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>HiveWise -- The Intelligence Ecosystem</title>
+<title>HiveWise — The Intelligence Ecosystem</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
-body{font-family:'Inter',sans-serif;background:#f8fafc;color:#0d121b;overflow-x:hidden;display:flex;flex-direction:column}
+body{font-family:'Inter',sans-serif;background:#f8fafc;color:#0d121b;overflow-x:hidden;overflow-y:auto}
 
-/* NAV */
-.hdr{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(248,250,252,0.95);backdrop-filter:blur(12px);border-bottom:1px solid #e2e8f0;display:flex;align-items:center;justify-content:space-between;padding:0 24px;height:60px}
-.hdr-logo{font-size:18px;font-weight:900;color:#0d121b;display:flex;align-items:center;gap:8px;text-decoration:none}
+/* ── HIVE SECTION ── */
+#hive-section{
+  height:100vh;height:100dvh;flex-shrink:0;
+  position:relative;overflow:hidden;
+  background:linear-gradient(160deg,#f8fafc 0%,#f1f5f9 50%,#f8fafc 100%);
+}
+.bghex{position:absolute;inset:0;z-index:0;opacity:0.04;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='104'%3E%3Cpath d='M30 2L58 18L58 52L30 68L2 52L2 18Z' fill='none' stroke='%23f59e0b' stroke-width='1.5'/%3E%3Cpath d='M30 68L58 84L58 104' fill='none' stroke='%23f59e0b' stroke-width='1.5'/%3E%3Cpath d='M30 68L2 84L2 104' fill='none' stroke='%23f59e0b' stroke-width='1.5'/%3E%3C/svg%3E");
+  background-size:60px 104px;pointer-events:none}
+.bg-glow{position:absolute;top:30%;left:50%;transform:translate(-50%,-50%);
+  width:600px;height:600px;border-radius:50%;
+  background:radial-gradient(circle,rgba(245,158,11,0.08) 0%,transparent 70%);
+  pointer-events:none;z-index:0}
+
+/* HEADER */
+.hdr{position:fixed;top:0;left:0;right:0;z-index:100;
+  background:rgba(248,250,252,0.92);backdrop-filter:blur(12px);
+  border-bottom:1px solid #e2e8f0;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 40px;height:60px}
+.hdr-logo{font-size:20px;font-weight:900;color:#0d121b;display:flex;align-items:center;gap:8px;text-decoration:none}
 .hdr-logo span{color:#d97706}
-.hdr-links{display:flex;gap:4px}
-.hdr-link{font-size:12px;font-weight:600;color:#626a75;text-decoration:none;padding:5px 10px;border-radius:7px;transition:all 0.15s}
+.hdr-links{display:flex;gap:6px}
+.hdr-link{font-size:13px;font-weight:600;color:#626a75;text-decoration:none;
+  padding:6px 12px;border-radius:8px;transition:all 0.15s}
 .hdr-link:hover{background:#ecf2ff;color:#4f6bff}
-.hdr-cta{font-size:12px;font-weight:700;color:#fff;background:#d97706;padding:7px 14px;border-radius:8px;text-decoration:none;white-space:nowrap}
-.hdr-cta:hover{background:#b45309}
-@media(max-width:600px){.hdr-links{display:none}.hdr{padding:0 14px}}
+.hdr-cta{font-size:13px;font-weight:700;color:#fff;background:#d97706;padding:7px 16px;border-radius:8px;text-decoration:none;transition:all 0.2s;white-space:nowrap}
+.hdr-cta:hover{background:#b45309;transform:translateY(-1px)}
 
-/* HIVE SECTION */
-#hive-section{position:relative;width:100%;overflow:hidden;background:linear-gradient(160deg,#f8fafc 0%,#f1f5f9 50%,#f8fafc 100%);flex-shrink:0}
-.bghex{position:absolute;inset:0;opacity:0.04;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='104'%3E%3Cpath d='M30 2L58 18L58 52L30 68L2 52L2 18Z' fill='none' stroke='%23f59e0b' stroke-width='1.5'/%3E%3C/svg%3E");background-size:60px 104px;pointer-events:none;z-index:0}
-.bg-glow{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(245,158,11,0.07) 0%,transparent 70%);pointer-events:none;z-index:0}
-#cv{position:absolute;left:0;right:0;top:60px;bottom:0;z-index:2;overflow:hidden}
-#hw{position:absolute;cursor:pointer;user-select:none;z-index:3;transform:translate(-50%,-50%)}
-#hw:hover #hsv{filter:drop-shadow(0 0 40px rgba(196,154,40,0.55)) !important}
-.pr{position:absolute;border-radius:50%;border:1.5px solid rgba(217,119,6,0.2);animation:rp 2.8s ease-out infinite;pointer-events:none;transform:translate(-50%,-50%);left:50%;top:44%}
-.pr:nth-child(2){animation-delay:0.93s}.pr:nth-child(3){animation-delay:1.86s}
-@keyframes rp{0%{width:140px;height:140px;opacity:0.6}100%{width:480px;height:480px;opacity:0}}
-#hint{position:absolute;bottom:24px;left:50%;transform:translateX(-50%);font-size:12px;color:#92400e;font-family:'JetBrains Mono',monospace;letter-spacing:0.08em;white-space:nowrap;transition:opacity 0.4s;display:flex;align-items:center;gap:8px;background:rgba(254,243,199,0.9);border:1px solid rgba(217,119,6,0.2);padding:7px 16px;border-radius:100px;z-index:5}
+/* CANVAS */
+#cv{position:absolute;inset:0;padding-top:60px;z-index:2;overflow:hidden;}
+
+/* HIVE */
+#hw{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);cursor:pointer;user-select:none;z-index:2}
+.pr{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);border-radius:50%;
+  border:1.5px solid rgba(217,119,6,0.18);animation:rp 2.8s ease-out infinite;pointer-events:none}
+.pr:nth-child(2){animation-delay:0.93s}
+.pr:nth-child(3){animation-delay:1.86s}
+@keyframes rp{0%{width:150px;height:150px;opacity:0.6}100%{width:500px;height:500px;opacity:0}}
+#hint{position:absolute;bottom:-52px;left:50%;transform:translateX(-50%);
+  font-size:12px;color:#92400e;font-family:'JetBrains Mono',monospace;letter-spacing:0.1em;
+  white-space:nowrap;transition:opacity 0.4s;display:flex;align-items:center;gap:8px;
+  background:rgba(254,243,199,0.8);border:1px solid rgba(217,119,6,0.2);
+  padding:7px 16px;border-radius:100px}
 #hint.hid{opacity:0;pointer-events:none}
-.hd{width:7px;height:7px;border-radius:50%;background:#d97706;animation:hda 2s infinite;flex-shrink:0}
-@keyframes hda{0%,100%{opacity:1}50%{opacity:0.3}}
+.hd{width:7px;height:7px;border-radius:50%;background:#d97706;animation:hda 2s infinite}
+@keyframes hda{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.35;transform:scale(0.65)}}
 
-/* HEX CELLS */
-.hxc{position:absolute;cursor:pointer;opacity:0;transform:scale(0.05);transition:none;z-index:6;pointer-events:none}
-.hxc.bl{opacity:1;transform:scale(1) !important;transition:opacity 0.4s ease,transform 0.45s cubic-bezier(0.34,1.56,0.64,1);pointer-events:auto}
-.hxc:hover{z-index:20}.hxc:hover .hxi{filter:drop-shadow(0 0 14px rgba(217,119,6,0.5));transform:scale(1.08)}
-.hxi{width:100%;height:100%;clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:10px 8px;transition:transform 0.2s,filter 0.2s;background:linear-gradient(150deg,#fff8e8,#fef3c7);position:relative;overflow:hidden}
-.hxi::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(217,119,6,0.15),rgba(217,119,6,0.03))}
-.hxc::before{content:'';position:absolute;inset:-3px;clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);background:linear-gradient(135deg,rgba(217,119,6,0.5),rgba(245,158,11,0.2));z-index:-1}
-.hico{font-size:18px;margin-bottom:4px;position:relative;z-index:1;line-height:1}
-.hnm{font-size:8px;font-weight:800;color:#92400e;line-height:1.3;position:relative;z-index:1}
-.hsb{font-size:7px;color:#b45309;line-height:1.3;margin-top:2px;position:relative;z-index:1;opacity:0.7}
+/* HEX CELLS — light theme */
+.hxc{position:absolute;width:108px;height:124px;cursor:pointer;opacity:0;
+  transform:scale(0.1);transition:none;z-index:8;pointer-events:none}
+.hxc.bl{opacity:1;transform:scale(1) !important;
+  transition:opacity 0.4s ease,transform 0.5s cubic-bezier(0.34,1.56,0.64,1);pointer-events:auto}
+.hxc:hover{z-index:20}
+.hxc:hover .hxi{filter:drop-shadow(0 0 14px rgba(217,119,6,0.5));transform:scale(1.08)}
+.hxi{width:100%;height:100%;
+  clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  text-align:center;padding:14px 10px;
+  transition:transform 0.2s ease,filter 0.2s ease;
+  background:linear-gradient(150deg,#fff8e8,#fef3c7);
+  position:relative;overflow:hidden}
+.hxi::after{content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,rgba(217,119,6,0.12),rgba(217,119,6,0.03))}
+.hxc::before{content:'';position:absolute;inset:-3px;
+  clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);
+  background:linear-gradient(135deg,rgba(217,119,6,0.5),rgba(245,158,11,0.2));z-index:-1}
+.hico{font-size:20px;margin-bottom:5px;position:relative;z-index:1;line-height:1}
+.hnm{font-size:9px;font-weight:800;color:#92400e;line-height:1.3;position:relative;z-index:1;letter-spacing:0.03em}
+.hsb{font-size:8px;color:#b45309;line-height:1.3;margin-top:3px;position:relative;z-index:1;opacity:0.7}
 
-/* BEES */
-.bep{position:absolute;cursor:pointer;opacity:0;z-index:8;pointer-events:none;transition:none}
+/* BEE — light theme */
+.bep{position:absolute;cursor:pointer;opacity:0;z-index:10;pointer-events:none;transition:none}
 .bep.sc{opacity:1;pointer-events:auto;transition:opacity 0.4s ease;animation:bf 3s ease-in-out infinite}
-.bep:hover{animation:none !important;z-index:30}.bep:hover .bsv{transform:scale(1.2) translateY(-4px)}
-@keyframes bf{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-8px) rotate(2deg)}}
-.bsv{transition:transform 0.2s cubic-bezier(0.34,1.56,0.64,1);width:100%;height:100%}
-.bnt{position:absolute;top:calc(100% + 2px);left:50%;transform:translateX(-50%);background:rgba(255,255,255,0.95);border:1px solid rgba(217,119,6,0.3);color:#92400e;font-size:8px;font-weight:800;padding:2px 8px;border-radius:100px;white-space:nowrap;pointer-events:none;font-family:'Inter',sans-serif;box-shadow:0 1px 6px rgba(0,0,0,0.08)}
+.bep:hover{animation:none !important;z-index:30}
+.bep:hover .bsv{transform:scale(1.22) translateY(-5px)}
+.bep:hover .bnt{opacity:1;border-color:rgba(217,119,6,0.7)}
+@keyframes bf{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-9px) rotate(2deg)}}
+.bsv{transition:transform 0.22s cubic-bezier(0.34,1.56,0.64,1)}
+.bnt{position:absolute;top:calc(100% + 3px);left:50%;transform:translateX(-50%);
+  background:rgba(255,255,255,0.95);border:1px solid rgba(217,119,6,0.3);
+  color:#92400e;font-size:9px;font-weight:800;padding:3px 9px;border-radius:100px;
+  white-space:nowrap;opacity:1;pointer-events:none;
+  font-family:'Inter',sans-serif;letter-spacing:0.04em;
+  box-shadow:0 2px 8px rgba(0,0,0,0.08)}
 
-/* CONTROLS */
-#rb{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#fff;border:1.5px solid #e2e8f0;color:#626a75;font-size:12px;font-weight:700;font-family:inherit;padding:8px 18px;border-radius:100px;cursor:pointer;opacity:0;pointer-events:none;z-index:50;box-shadow:0 2px 8px rgba(0,0,0,0.08);transition:all 0.2s}
+/* RESET BTN */
+#rb{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);
+  background:#fff;border:1.5px solid #e2e8f0;color:#626a75;
+  font-size:12px;font-weight:700;font-family:inherit;
+  padding:8px 20px;border-radius:100px;cursor:pointer;
+  transition:all 0.2s;opacity:0;pointer-events:none;z-index:50;
+  box-shadow:0 2px 8px rgba(0,0,0,0.08)}
 #rb.sh{opacity:1;pointer-events:auto}
 #rb:hover{border-color:#d97706;color:#92400e}
-#btt{position:fixed;bottom:22px;right:88px;z-index:200;width:44px;height:44px;border-radius:50%;background:#d97706;border:none;color:#fff;font-size:20px;cursor:pointer;box-shadow:0 4px 14px rgba(217,119,6,0.35);display:none;align-items:center;justify-content:center;transition:all 0.2s}
-#btt.visible{display:flex}
-#btt:hover{background:#b45309;transform:translateY(-2px)}
 
-/* MODAL */
-.mbd{position:fixed;inset:0;z-index:200;background:rgba(15,23,42,0.5);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;pointer-events:none;transition:opacity 0.22s}
-.mbd.op{opacity:1;pointer-events:auto}
-.mdl{background:#fff;border:1px solid #e2e8f0;border-radius:22px;width:100%;max-width:440px;box-shadow:0 24px 60px rgba(15,23,42,0.15);transform:scale(0.9) translateY(16px);transition:transform 0.3s cubic-bezier(0.34,1.56,0.64,1);overflow:hidden}
-.mbd.op .mdl{transform:scale(1) translateY(0)}
-.mhd{padding:22px 22px 16px;border-bottom:1px solid #f1f5f9;display:flex;align-items:flex-start;gap:12px}
-.mic{font-size:38px;line-height:1;flex-shrink:0}.mht{flex:1}
-.mtl{font-size:17px;font-weight:900;color:#0d121b;margin-bottom:5px;line-height:1.2}
-.mct{font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;padding:3px 10px;border-radius:100px;display:inline-block}
-.mx{width:28px;height:28px;border-radius:50%;background:#f1f5f9;border:none;color:#626a75;cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-left:auto}
-.mx:hover{background:#e2e8f0}
-.mby{padding:16px 22px 22px}
-.mds{font-size:13px;color:#475569;line-height:1.7;margin-bottom:12px}
-.mpl{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px}
-.mpi{font-size:10px;font-weight:600;padding:3px 10px;border-radius:100px}
-.mbn{display:block;width:100%;padding:12px;border-radius:11px;font-size:14px;font-weight:800;text-align:center;border:none;cursor:pointer;font-family:inherit;color:#fff;transition:transform 0.2s,box-shadow 0.2s}
-.mbn:hover{transform:translateY(-2px)}
-.mbn.cs{background:#e2e8f0;color:#9aa1ad;cursor:default}.mbn.cs:hover{transform:none}
-.m-scroll-btn{display:block;width:100%;padding:10px;border-radius:11px;font-size:13px;font-weight:700;text-align:center;border:1.5px solid #e2e8f0;cursor:pointer;font-family:inherit;color:#475569;background:#fff;margin-top:8px;transition:all 0.2s}
-.m-scroll-btn:hover{border-color:#d97706;color:#92400e}
+/* ── PARTNERS SECTIONS ── */
+#partners-section{background:#f8fafc;padding:80px 0 120px}
+.section-header{text-align:center;padding:0 24px;margin-bottom:64px}
+.section-eyebrow{display:inline-flex;align-items:center;gap:8px;
+  background:#fef3c7;border:1px solid rgba(217,119,6,0.25);
+  border-radius:100px;padding:6px 16px;font-size:11px;font-weight:700;
+  color:#92400e;letter-spacing:0.12em;text-transform:uppercase;margin-bottom:14px}
+.section-h2{font-size:clamp(28px,4vw,40px);font-weight:900;color:#0d121b;
+  letter-spacing:-0.025em;margin-bottom:12px}
+.section-sub{font-size:16px;color:#626a75;max-width:560px;margin:0 auto;line-height:1.65}
 
-/* AGENT */
-#hive-agent-btn{position:fixed;bottom:22px;right:22px;z-index:300;width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,#d97706,#f59e0b);border:none;cursor:pointer;box-shadow:0 4px 18px rgba(217,119,6,0.4);display:flex;align-items:center;justify-content:center;font-size:22px;transition:all 0.25s}
-#hive-agent-btn:hover{transform:scale(1.1)}
-#hive-agent-badge{position:absolute;top:-3px;right:-3px;width:15px;height:15px;border-radius:50%;background:#10ae65;border:2px solid #fff}
-#hive-agent-panel{position:fixed;bottom:86px;right:16px;z-index:300;width:min(320px,calc(100vw - 24px));background:#fff;border:1px solid #e2e8f0;border-radius:20px;box-shadow:0 16px 48px rgba(15,23,42,0.16);display:none;flex-direction:column;overflow:hidden;font-family:'Inter',sans-serif;max-height:75vh}
-#hive-agent-panel.open{display:flex}
-.agent-header{background:linear-gradient(135deg,#d97706,#f59e0b);padding:12px 14px;display:flex;align-items:center;gap:10px;flex-shrink:0}
-.agent-header-icon{font-size:20px;line-height:1;flex-shrink:0}
-.agent-header-title{font-size:13px;font-weight:800;color:#fff;display:block}
-.agent-header-sub{font-size:10px;color:rgba(255,255,255,0.75);display:block;margin-top:1px}
-.agent-close{margin-left:auto;background:rgba(255,255,255,0.2);border:none;color:#fff;width:26px;height:26px;border-radius:50%;cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:center;font-family:inherit}
-.agent-messages{padding:12px;display:flex;flex-direction:column;gap:8px;max-height:200px;overflow-y:auto;flex-shrink:0}
-.agent-msg{font-size:12px;line-height:1.55;padding:9px 12px;border-radius:12px;max-width:92%}
-.agent-msg.bot{background:#f8fafc;border:1px solid #e2e8f0;color:#0d121b;align-self:flex-start;border-radius:4px 12px 12px 12px}
-.agent-msg.user{background:#d97706;color:#fff;align-self:flex-end;border-radius:12px 4px 12px 12px}
-.agent-results{padding:0 12px 10px;display:flex;flex-direction:column;gap:7px}
-.agent-result-card{background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:11px}
-.arc-top{display:flex;align-items:flex-start;gap:7px;margin-bottom:7px}
-.arc-icon{font-size:18px;flex-shrink:0;line-height:1}
-.arc-name{font-size:12px;font-weight:800;color:#0d121b}
-.arc-why{font-size:10px;color:#626a75;margin-top:2px;line-height:1.4}
-.arc-btns{display:flex;gap:5px;flex-wrap:wrap}
-.arc-btn{font-size:10px;font-weight:700;padding:4px 10px;border-radius:7px;border:1px solid transparent;cursor:pointer;text-decoration:none;display:inline-block;font-family:inherit;transition:all 0.15s;line-height:1.4}
-.arc-btn.primary{background:#d97706;color:#fff;border-color:#d97706}
-.arc-btn.primary:hover{background:#b45309}
-.arc-btn.secondary{background:#fff;color:#475569;border-color:#e2e8f0}
-.arc-btn.secondary:hover{border-color:#d97706;color:#92400e}
-.agent-input-wrap{padding:10px 12px;border-top:1px solid #f1f5f9;display:flex;gap:7px;align-items:center;flex-shrink:0}
-.agent-input{flex:1;border:1.5px solid #e2e8f0;border-radius:9px;padding:8px 11px;font-size:12px;font-family:inherit;outline:none;background:#f8fafc;color:#0d121b;transition:border-color 0.15s}
-.agent-input:focus{border-color:#d97706;background:#fff}
-.agent-send{width:32px;height:32px;border-radius:9px;flex-shrink:0;background:#d97706;border:none;color:#fff;cursor:pointer;font-size:15px;display:flex;align-items:center;justify-content:center}
-.agent-send:hover{background:#b45309}
-.agent-footer{padding:5px 12px;text-align:center;font-size:9px;color:#c4b5a0;background:#fafaf9;border-top:1px solid #f1f5f9;flex-shrink:0;font-family:'JetBrains Mono',monospace}
-@media(max-width:480px){
-  #hive-agent-panel{right:0;left:0;width:100%;border-radius:20px 20px 0 0;bottom:0;max-height:65vh}
-  #hive-agent-btn{right:14px;bottom:14px;width:48px;height:48px;font-size:20px}
-  #btt{right:72px;bottom:14px;width:40px;height:40px;font-size:18px}
-  #rb{bottom:14px}
-}
-
+/* Partner / Product Card */
 .partner-card-wrap{max-width:1100px;margin:0 auto;padding:0 32px}
 .pcard{background:#fff;border:1px solid #e2e8f0;border-radius:20px;
   padding:40px;margin-bottom:24px;
@@ -259,7 +253,7 @@ body{font-family:'Inter',sans-serif;background:#f8fafc;color:#0d121b;overflow-x:
 #btt:hover{background:#b45309;transform:translateY(-2px);box-shadow:0 8px 24px rgba(217,119,6,0.45)}
 
 @media(max-width:768px){
-  #hsv{width:160px !important;height:183px !important}
+  #hsv{width:180px !important;height:206px !important}
   .hxc{width:82px;height:94px}
   .hico{font-size:15px}
   .hnm{font-size:7px}
@@ -286,7 +280,7 @@ body{font-family:'Inter',sans-serif;background:#f8fafc;color:#0d121b;overflow-x:
 #btt:hover{background:#b45309;transform:translateY(-2px);box-shadow:0 8px 24px rgba(217,119,6,0.45)}
 
 @media(max-width:768px){
-  #hsv{width:160px !important;height:183px !important}
+  #hsv{width:180px !important;height:206px !important}
   .hxc{width:82px;height:94px}
   .hico{font-size:15px}
   .hnm{font-size:7px}
@@ -302,18 +296,116 @@ body{font-family:'Inter',sans-serif;background:#f8fafc;color:#0d121b;overflow-x:
 }
 
 /* -- HIVE AGENT WIDGET -- */
+#hive-agent-btn{
+  position:fixed;bottom:28px;right:80px;z-index:300;
+  width:54px;height:54px;border-radius:50%;
+  background:linear-gradient(135deg,#d97706,#f59e0b);
+  border:none;cursor:pointer;
+  box-shadow:0 4px 20px rgba(217,119,6,0.4);
+  display:flex;align-items:center;justify-content:center;
+  font-size:24px;transition:all 0.25s;
+}
+#hive-agent-btn:hover{transform:scale(1.1)}
+#hive-agent-badge{
+  position:absolute;top:-3px;right:-3px;
+  width:16px;height:16px;border-radius:50%;
+  background:#10ae65;border:2px solid #fff;
+}
+#hive-agent-panel{
+  position:fixed;bottom:94px;right:16px;z-index:300;
+  width:min(320px, calc(100vw - 24px));
+  background:#fff;border:1px solid #e2e8f0;
+  border-radius:20px;
+  box-shadow:0 16px 48px rgba(15,23,42,0.18);
+  display:none;flex-direction:column;
+  overflow:hidden;
+  font-family:'Inter',sans-serif;
+  max-height:80vh;
+}
+#hive-agent-panel.open{display:flex}
+.agent-header{
+  background:linear-gradient(135deg,#d97706,#f59e0b);
+  padding:14px 16px;
+  display:flex;align-items:center;gap:10px;
+  flex-shrink:0;
+}
+.agent-header-icon{font-size:22px;line-height:1;flex-shrink:0}
+.agent-header-title{font-size:14px;font-weight:800;color:#fff;line-height:1.2;display:block}
+.agent-header-sub{font-size:11px;color:rgba(255,255,255,0.75);display:block;margin-top:1px}
+.agent-close{margin-left:auto;background:rgba(255,255,255,0.2);border:none;
+  color:#fff;width:28px;height:28px;border-radius:50%;cursor:pointer;
+  font-size:14px;display:flex;align-items:center;justify-content:center;font-family:inherit}
+.agent-close:hover{background:rgba(255,255,255,0.35)}
+.agent-messages{
+  padding:14px;display:flex;flex-direction:column;gap:10px;
+  max-height:220px;overflow-y:auto;flex-shrink:0;
+}
+.agent-msg{font-size:13px;line-height:1.55;padding:10px 13px;border-radius:12px;max-width:92%}
+.agent-msg.bot{background:#f8fafc;border:1px solid #e2e8f0;color:#0d121b;
+  align-self:flex-start;border-radius:4px 12px 12px 12px}
+.agent-msg.user{background:#d97706;color:#fff;
+  align-self:flex-end;border-radius:12px 4px 12px 12px}
+.agent-results{padding:0 14px 10px;display:flex;flex-direction:column;gap:8px}
+.agent-result-card{
+  background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:12px;
+}
+.arc-top{display:flex;align-items:flex-start;gap:8px;margin-bottom:8px}
+.arc-icon{font-size:20px;flex-shrink:0;line-height:1}
+.arc-name{font-size:13px;font-weight:800;color:#0d121b}
+.arc-why{font-size:11px;color:#626a75;margin-top:2px;line-height:1.4}
+.arc-btns{display:flex;gap:6px;flex-wrap:wrap}
+.arc-btn{font-size:11px;font-weight:700;padding:5px 11px;border-radius:7px;
+  border:1px solid transparent;cursor:pointer;text-decoration:none;
+  display:inline-block;font-family:inherit;transition:all 0.15s;line-height:1.4}
+.arc-btn.primary{background:#d97706;color:#fff;border-color:#d97706}
+.arc-btn.primary:hover{background:#b45309;border-color:#b45309}
+.arc-btn.secondary{background:#fff;color:#475569;border-color:#e2e8f0}
+.arc-btn.secondary:hover{border-color:#d97706;color:#92400e}
+.agent-input-wrap{
+  padding:10px 12px;border-top:1px solid #f1f5f9;
+  display:flex;gap:8px;align-items:center;flex-shrink:0;
+}
+.agent-input{
+  flex:1;border:1.5px solid #e2e8f0;border-radius:10px;
+  padding:9px 12px;font-size:13px;font-family:inherit;
+  outline:none;background:#f8fafc;color:#0d121b;
+  transition:border-color 0.15s;
+}
+.agent-input:focus{border-color:#d97706;background:#fff}
+.agent-send{
+  width:34px;height:34px;border-radius:9px;flex-shrink:0;
+  background:#d97706;border:none;color:#fff;
+  cursor:pointer;font-size:16px;
+  display:flex;align-items:center;justify-content:center;
+  transition:background 0.15s;
+}
+.agent-send:hover{background:#b45309}
+.agent-footer{
+  padding:6px 12px;text-align:center;
+  font-size:10px;color:#c4b5a0;background:#fafaf9;
+  border-top:1px solid #f1f5f9;flex-shrink:0;
+  font-family:'JetBrains Mono',monospace;
+}
 
 
-/* STATS */
-.stats-footer{background:#0d121b;padding:48px 32px}
-.stats-inner{max-width:900px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr);gap:32px;text-align:center}
-.stat-val{font-size:34px;font-weight:900;color:#f59e0b;font-family:'JetBrains Mono',monospace;margin-bottom:6px}
-.stat-lbl{font-size:12px;color:rgba(255,255,255,0.4)}
-@media(max-width:640px){.stats-inner{grid-template-columns:1fr 1fr;gap:24px}}
+@media(max-width:600px){
+  #hive-agent-panel{
+    right:0;left:0;bottom:0;
+    width:100%;
+    border-radius:20px 20px 0 0;
+    max-height:70vh;
+  }
+  #hive-agent-btn{
+    right:16px;
+    bottom:16px;
+  }
+}
+
 </style>
 </head>
 <body>
 
+<!-- NAV -->
 <nav class="hdr">
   <a href="#hive-section" class="hdr-logo">&#x1F41D; Hive<span>Wise</span></a>
   <div class="hdr-links">
@@ -325,17 +417,30 @@ body{font-family:'Inter',sans-serif;background:#f8fafc;color:#0d121b;overflow-x:
   <a href="#contact" class="hdr-cta">Request Demo</a>
 </nav>
 
-<section id="hive-section">
-  <div class="bghex"></div><div class="bg-glow"></div>
+<!-- ── HIVE SECTION ── -->
+<section id="hive-section" style="display:flex;flex-direction:column;">
+  <div class="bghex"></div>
+  <div class="bg-glow"></div>
   <div id="cv">
     <div id="hw" onclick="openHive()">
       <div class="pr"></div><div class="pr"></div><div class="pr"></div>
-      <svg id="hsv" viewBox="0 0 280 320" xmlns="http://www.w3.org/2000/svg" style="display:block;filter:drop-shadow(0 8px 28px rgba(180,90,0,0.2));transition:filter 0.3s">
+      <svg id="hsv" viewBox="0 0 280 320" xmlns="http://www.w3.org/2000/svg"
+        style="width:240px;height:274px;filter:drop-shadow(0 8px 32px rgba(180,90,0,0.22));transition:filter 0.3s">
         <defs>
-          <linearGradient id="hb" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#fde68a"/><stop offset="45%" stop-color="#f59e0b"/><stop offset="100%" stop-color="#92400e"/></linearGradient>
-          <linearGradient id="rf" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stop-color="#fde68a"/><stop offset="100%" stop-color="#b45309"/></linearGradient>
-          <linearGradient id="pl" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#78350f"/><stop offset="100%" stop-color="#b45309"/></linearGradient>
-          <filter id="gs"><feDropShadow dx="0" dy="6" stdDeviation="9" flood-color="rgba(180,90,0,0.28)"/></filter>
+          <linearGradient id="hb" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#fde68a"/>
+            <stop offset="45%" stop-color="#f59e0b"/>
+            <stop offset="100%" stop-color="#92400e"/>
+          </linearGradient>
+          <linearGradient id="rf" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stop-color="#fde68a"/>
+            <stop offset="100%" stop-color="#b45309"/>
+          </linearGradient>
+          <linearGradient id="pl" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#78350f"/>
+            <stop offset="100%" stop-color="#b45309"/>
+          </linearGradient>
+          <filter id="gs"><feDropShadow dx="0" dy="6" stdDeviation="10" flood-color="rgba(180,90,0,0.3)"/></filter>
           <pattern id="hp" x="0" y="0" width="24" height="42" patternUnits="userSpaceOnUse">
             <polygon points="12,1 23,7 23,21 12,27 1,21 1,7" fill="none" stroke="rgba(120,53,15,0.22)" stroke-width="0.9"/>
             <polygon points="12,22 23,28 23,42 12,48 1,42 1,28" fill="none" stroke="rgba(120,53,15,0.22)" stroke-width="0.9"/>
@@ -343,32 +448,36 @@ body{font-family:'Inter',sans-serif;background:#f8fafc;color:#0d121b;overflow-x:
         </defs>
         <rect x="126" y="218" width="28" height="98" rx="7" fill="url(#pl)"/>
         <rect x="90" y="212" width="100" height="13" rx="5" fill="#78350f"/>
+        <rect x="94" y="213" width="92" height="7" rx="3" fill="#92400e"/>
         <ellipse cx="140" cy="160" rx="106" ry="124" fill="rgba(120,50,0,0.12)"/>
         <ellipse cx="140" cy="158" rx="102" ry="120" fill="url(#hb)" filter="url(#gs)"/>
         <ellipse cx="140" cy="158" rx="102" ry="120" fill="url(#hp)" opacity="0.5"/>
         <ellipse cx="140" cy="158" rx="102" ry="120" fill="rgba(255,255,255,0.04)"/>
-        <ellipse cx="140" cy="82" rx="70" ry="9" fill="rgba(100,40,0,0.28)"/>
-        <ellipse cx="140" cy="110" rx="90" ry="9" fill="rgba(100,40,0,0.24)"/>
-        <ellipse cx="140" cy="142" rx="102" ry="9" fill="rgba(100,40,0,0.22)"/>
-        <ellipse cx="140" cy="175" rx="100" ry="8" fill="rgba(100,40,0,0.18)"/>
-        <ellipse cx="95" cy="136" rx="32" ry="78" fill="rgba(255,255,255,0.08)" transform="rotate(-15,95,136)"/>
-        <ellipse cx="140" cy="210" rx="26" ry="11" fill="#451a03"/>
+        <ellipse cx="140" cy="82"  rx="70"  ry="9"  fill="rgba(100,40,0,0.28)"/>
+        <ellipse cx="140" cy="110" rx="90"  ry="9"  fill="rgba(100,40,0,0.24)"/>
+        <ellipse cx="140" cy="142" rx="102" ry="9"  fill="rgba(100,40,0,0.22)"/>
+        <ellipse cx="140" cy="175" rx="100" ry="8"  fill="rgba(100,40,0,0.18)"/>
+        <ellipse cx="95"  cy="136" rx="32"  ry="78" fill="rgba(255,255,255,0.08)" transform="rotate(-15,95,136)"/>
+        <ellipse cx="140" cy="210" rx="26"  ry="11" fill="#451a03"/>
+        <ellipse cx="140" cy="208" rx="21"  ry="8"  fill="#3a1402"/>
         <rect x="116" y="215" width="48" height="6" rx="3" fill="#78350f"/>
-        <path d="M74 198 Q71 210 73 220" stroke="#fbbf24" stroke-width="2.5" fill="none" stroke-linecap="round" opacity="0.5"/>
-        <ellipse cx="140" cy="50" rx="78" ry="54" fill="url(#rf)" filter="url(#gs)"/>
-        <ellipse cx="140" cy="50" rx="78" ry="54" fill="url(#hp)" opacity="0.35"/>
-        <ellipse cx="140" cy="26" rx="48" ry="8" fill="rgba(100,40,0,0.25)"/>
-        <ellipse cx="140" cy="52" rx="76" ry="8" fill="rgba(100,40,0,0.2)"/>
-        <ellipse cx="116" cy="32" rx="22" ry="16" fill="rgba(255,255,255,0.1)" transform="rotate(-12,116,32)"/>
-        <circle cx="140" cy="4" r="7" fill="#f59e0b"/>
+        <path d="M74 198 Q71 210 73 220 Q75 228 72 236" stroke="#fbbf24" stroke-width="2.8" fill="none" stroke-linecap="round" opacity="0.5"/>
+        <ellipse cx="72" cy="238" rx="4" ry="5.5" fill="#fbbf24" opacity="0.5"/>
+        <ellipse cx="140" cy="50"  rx="78"  ry="54" fill="url(#rf)" filter="url(#gs)"/>
+        <ellipse cx="140" cy="50"  rx="78"  ry="54" fill="url(#hp)" opacity="0.38"/>
+        <ellipse cx="140" cy="26"  rx="48"  ry="8"  fill="rgba(100,40,0,0.25)"/>
+        <ellipse cx="140" cy="52"  rx="76"  ry="8"  fill="rgba(100,40,0,0.2)"/>
+        <ellipse cx="116" cy="32"  rx="22"  ry="16" fill="rgba(255,255,255,0.1)" transform="rotate(-12,116,32)"/>
+        <circle  cx="140" cy="4"   r="7" fill="#f59e0b"/>
         <text x="140" y="156" text-anchor="middle" font-family="Inter,sans-serif" font-weight="900" font-size="22" fill="rgba(255,255,255,0.92)" letter-spacing="3">HIVE</text>
-        <text x="140" y="174" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="8" fill="rgba(255,255,255,0.48)" letter-spacing="2">AGENTIC AI</text>
+        <text x="140" y="174" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="8" fill="rgba(255,255,255,0.5)" letter-spacing="2">AGENTIC AI</text>
       </svg>
       <div id="hint"><div class="hd"></div>Click the hive to reveal the ecosystem</div>
     </div>
   </div>
 </section>
 
+<!-- ── PARTNERS SECTIONS ── -->
 <section id="partners-section">
   <div class="section-header">
     <div class="section-eyebrow">&#x1F41D; The Full Ecosystem</div>
@@ -968,7 +1077,7 @@ body{font-family:'Inter',sans-serif;background:#f8fafc;color:#0d121b;overflow-x:
   </div>
 </section>
 
-
+<!-- STATS FOOTER -->
 <div class="stats-footer">
   <div class="stats-inner">
     <div><div class="stat-val">14+</div><div class="stat-lbl">Global Partners</div></div>
@@ -978,39 +1087,28 @@ body{font-family:'Inter',sans-serif;background:#f8fafc;color:#0d121b;overflow-x:
   </div>
 </div>
 
+<!-- MODAL -->
 <div class="mbd" id="mbd" onclick="cMBd(event)">
   <div class="mdl">
-    <div class="mhd"><div class="mic" id="mIc"></div><div class="mht"><div class="mtl" id="mTl"></div><div class="mct" id="mCt"></div></div><button class="mx" onclick="cM()">&#x2715;</button></div>
-    <div class="mby"><div class="mds" id="mDs"></div><div class="mpl" id="mPl"></div><button class="mbn" id="mBn" onclick="vM()"></button><button class="m-scroll-btn" id="mScr" onclick="scrollToSection()">See full details below &#x2193;</button></div>
+    <div class="mhd">
+      <div class="mic" id="mIc"></div>
+      <div class="mht"><div class="mtl" id="mTl"></div><div class="mct" id="mCt"></div></div>
+      <button class="mx" onclick="cM()">&#x2715;</button>
+    </div>
+    <div class="mby">
+      <div class="mds" id="mDs"></div>
+      <div class="mpl" id="mPl"></div>
+      <button class="mbn" id="mBn" onclick="vM()"></button>
+      <button class="m-scroll-btn" id="mScr" onclick="scrollToSection()">See full details below &#x2193;</button>
+    </div>
   </div>
 </div>
 
 <button id="rb" onclick="resetHive()">&#x21A9; Close the hive</button>
-<button id="btt" onclick="backToTop()" title="Back to top">&#x2191;</button>
-
-<button id="hive-agent-btn" onclick="toggleAgent()" title="Ask HiveWise">
-  <div id="hive-agent-badge"></div>&#x1F41D;
-</button>
-<div id="hive-agent-panel">
-  <div class="agent-header">
-    <div class="agent-header-icon">&#x1F41D;</div>
-    <div><span class="agent-header-title">HiveWise Assistant</span><span class="agent-header-sub">Tell me what you need</span></div>
-    <button class="agent-close" onclick="toggleAgent()">&#x2715;</button>
-  </div>
-  <div class="agent-messages" id="agent-msgs">
-    <div class="agent-msg bot">Hi! Describe what you are looking to do or the challenge you want to solve. I will connect you to the right part of the Hive.</div>
-  </div>
-  <div class="agent-results" id="agent-results"></div>
-  <div class="agent-input-wrap">
-    <input class="agent-input" id="agent-input" type="text" placeholder="e.g. I need deployment testing..." onkeydown="if(event.key==='Enter') agentSearch()">
-    <button class="agent-send" onclick="agentSearch()">&#x2192;</button>
-  </div>
-  <div class="agent-footer">Powered by HiveWise &#x1F41D;</div>
-</div>
-
 <script>
-var isOpen=false,CU=null,CURRENT_KEY=null,agentOpen=false;
+var CU=null, isOpen=false;
 
+/* --- CORE PRODUCTS (7 -- inner honeycomb ring) --- */
 var CORE=[
   {id:'mfg',    icon:'&#x1F3ED;', name:'Manufacturing',  sub:'Hive Wise + EQMS',
    desc:'AI-driven smart factory operations with full IT/OT convergence via EQMS. Industrial automation, process optimization, predictive maintenance, and real-time data ingestion from every machine on the floor.',
@@ -1047,6 +1145,8 @@ var CORE=[
    pills:['Sovereign','High-availability','Hybrid-cloud'],
    cat:'Infrastructure',catC:'#10ae65',catBg:'rgba(16,174,101,0.18)',url:'https://wx1.de/en',btn:'Visit wx1.de'},
 ];
+
+/* --- PARTNER BEES (13 -- outer scatter ring) --- */
 var PARTNERS=[
   /* Strategic & Specialized */
   {id:'friday', icon:'&#x1F916;', name:'Inspired One',  region:'AI & Agentic',
@@ -1120,405 +1220,315 @@ var PARTNERS=[
    pills:['Product Engineering','Full-stack Dev','Digital Transformation'],
    cat:'Regional Partner -- India',catC:'#f97316',catBg:'rgba(249,115,22,0.18)',url:'http://www.brilliqs.com',btn:'Visit brilliqs.com'},
 ];
-var HIVE_KB = [
-  {
-    id:'paios', name:'PAIOS', icon:'&#x1F3ED;',
-    tagline:'Physical AI Operating System for your factory',
-    desc:'Connects every machine, diagnoses faults in seconds, shares solutions across factories. 94% downtime reduction.',
-    url:'paios.html',
-    section:'section-paios',
-    keywords:['factory','machine','downtime','fault','diagnosis','manufacturing','robot','plc','oee','telemetry','sensor','industrial','plant','maintenance','predictive','asset','production','line','equipment','repair']
-  },
-  {
-    id:'scade', name:'SCADE', icon:'&#x1F4A5;',
-    tagline:'Supply Chain Anomaly Detection -- blast radius engine',
-    desc:'Maps supply chain disruptions, surfaces substitutes, ranks fixes in under 2 minutes.',
-    url:'paios.html',
-    section:'section-scade',
-    keywords:['supply chain','supplier','disruption','logistics','parts','delay','shipment','inventory','freight','cargo','blast radius','mitigation','procurement','shortage','vessel','truck','transport','risk']
-  },
-  {
-    id:'friday', name:'Friday by Inspired One', icon:'&#x1F916;',
-    tagline:'Your AI Growth CoWorker',
-    desc:'Creates specialist AI coworkers -- GrowthAnalyst, RevenuePilot, OpsRunner -- for Sales, Marketing, Operations and more.',
-    url:'https://inspiredone.ai/friday',
-    section:'section-friday',
-    keywords:['coworker','assistant','workflow','automate','sales','marketing','operations','productivity','task','ai worker','agent','revenue','growth','business','team','collaborate','office','executive','crm','outreach']
-  },
-  {
-    id:'testfold', name:'Testfold', icon:'&#x1F9EA;',
-    tagline:'Verify the code your AI writes',
-    desc:'AI-powered testing that writes its own tests, self-heals selectors, runs on every PR. Works with GitHub, GitLab, Claude Code, Jenkins.',
-    url:'https://testfold.ai',
-    section:'section-testfold',
-    keywords:['testing','test','qa','quality','verification','code','deployment','bug','ci','cd','pipeline','github','gitlab','selenium','automation','regression','pr','pull request','software','devops','engineer','developer']
-  },
-  {
-    id:'macvaar', name:'Macvaar AI', icon:'&#x2764;',
-    tagline:'22 specialized medical AI agents',
-    desc:'Detects 2000+ cardiovascular diseases and 8+ cancer types. Cervix AI, Lung AI, Cardio AI, Skin AI and more.',
-    url:'https://macvaarai.com',
-    section:'section-macvaar',
-    keywords:['healthcare','medical','health','hospital','patient','cancer','cardio','diagnostic','clinical','doctor','disease','detection','lung','skin','ai health','pharma','wellness','diagnosis']
-  },
-  {
-    id:'taligens', name:'Taligens', icon:'&#x1F91D;',
-    tagline:'Strategy and culture change consulting',
-    desc:'Served 100+ organizations in 40+ countries. Commitment-Based Management. SAP, Oracle, Workday change programs.',
-    url:'https://taligens.com',
-    section:'section-taligens',
-    keywords:['culture','change','people','organization','strategy','leadership','transformation','erp','sap','oracle','workday','human','talent','adoption','resistance','alignment','mindset','behavior','training','hr']
-  },
-  {
-    id:'oip', name:'Open Innovation Partners', icon:'&#x1F4C8;',
-    tagline:'Lean Kaizen and AI digital transformation',
-    desc:'E2E process simplification, startup scouting, AI adoption. Collaboration with Japanese senseis and Silicon Valley VCs.',
-    url:'http://openinnovationpartners.com',
-    section:'section-oip',
-    keywords:['lean','kaizen','process','efficiency','waste','improvement','continuous','innovation','startup','digital transformation','simplification','operations','productivity','ai adoption','consulting','agile','six sigma','value stream']
-  },
-  {
-    id:'iam', name:'IAM Intelligence', icon:'&#x1F4BC;',
-    tagline:'AI readiness, strategy and ethics',
-    desc:'AI readiness roadmaps, algorithmic strategy, ethics and governance frameworks for enterprise AI adoption.',
-    url:'https://iam-intelligence.com',
-    section:'section-iam',
-    keywords:['ai strategy','ai readiness','ethics','governance','algorithm','compliance','policy','responsible ai','regulation','audit','risk','ai consulting','enterprise ai','advisory','framework']
-  },
-  {
-    id:'wx1', name:'WX1', icon:'&#x1F3E2;',
-    tagline:'Sovereign data centres -- Europe',
-    desc:'GDPR-compliant sovereign hosting, secure data centres across Europe. High-availability hybrid-cloud infrastructure.',
-    url:'https://wx1.de/en',
-    section:'section-wx1',
-    keywords:['hosting','infrastructure','server','cloud','data centre','gdpr','europe','germany','sovereign','security','compliance','hosting','colocation','hybrid','network','storage','compute']
-  },
-  {
-    id:'iscott', name:'iScottsberg', icon:'&#x1F30F;',
-    tagline:'Industrial automation -- Singapore and APAC',
-    desc:'SCADA/PLC systems, process control, semiconductor fab automation. Chemical dispensing, electrical/mechanical installations.',
-    url:'https://iscottsberg.com',
-    section:'section-iscott',
-    keywords:['singapore','apac','asia','southeast asia','automation','scada','plc','semiconductor','fab','chemical','industrial control','process control','electrical','mechanical','installation']
-  },
-  {
-    id:'aatek', name:'Aatek', icon:'&#x1F9BE;',
-    tagline:'Robotic automation -- Europe',
-    desc:'Physical AI integration, robotic automation, industrial engineering for demanding factory environments.',
-    url:'https://aatek.de',
-    section:'section-aatek',
-    keywords:['robot','robotics','automation','physical ai','europe','germany','industrial engineering','arm','cobots','machine','assembly','welding','picking','gripping']
-  },
-  {
-    id:'igebra', name:'iGebra.ai', icon:'&#x1F9D2;',
-    tagline:'Kids AI education platform',
-    desc:'EdTech AI making artificial intelligence accessible to the next generation. IT consulting and data science across USA and India.',
-    url:'https://www.igebra.ai',
-    section:'section-igebra',
-    keywords:['education','kids','edtech','school','learning','student','ai literacy','children','curriculum','teach','classroom','stem','coding','india','usa']
-  },
-  {
-    id:'moon', name:'Moon IT Solutions', icon:'&#x1F4BB;',
-    tagline:'Managed IT and cloud -- USA',
-    desc:'Managed IT services, cloud solutions and infrastructure security for enterprise deployments in the United States.',
-    url:'https://moonitsolutions.com',
-    section:'section-moon',
-    keywords:['managed it','cloud','infrastructure','security','helpdesk','network','microsoft','azure','aws','support','it services','usa','backup','monitoring','endpoint']
-  },
-  {
-    id:'aevolan', name:'Aevolan', icon:'&#x26A1;',
-    tagline:'Data engineering and cloud architecture',
-    desc:'Microsoft Fabric, Data Vault 2.0, Azure, Snowflake, PySpark. KODE methodology. Multi-LLM orchestration via Soamed AI.',
-    url:'https://www.aevolantech.com',
-    section:'section-aevolan',
-    keywords:['data engineering','data warehouse','azure','fabric','snowflake','pyspark','lakehouse','etl','pipeline','analytics','cloud architecture','microsoft','data vault','llm','orchestration','databricks']
-  },
-  {
-    id:'synth', name:'Synthesys', icon:'&#x2699;',
-    tagline:'Enterprise application development -- India',
-    desc:'Enterprise application development and systems integration for large-scale deployments across India.',
-    url:'http://www.synthesys.co.in',
-    section:'section-synth',
-    keywords:['enterprise','application','development','integration','software','india','erp','crm','system','implementation','custom','build','deploy']
-  },
-  {
-    id:'brilliqs', name:'Brilliqs', icon:'&#x1F4A1;',
-    tagline:'Product engineering and full-stack development',
-    desc:'Product engineering, full-stack development and digital transformation. Fast delivery, production-ready.',
-    url:'http://www.brilliqs.com',
-    section:'section-brilliqs',
-    keywords:['product','engineering','full stack','frontend','backend','mobile','app','web','react','node','api','mvp','build','develop','startup','digital','india']
-  }
-];
 
-/* UTILS */
-function SW(){ return window.innerWidth; }
-function SH(){ return window.innerHeight; }
-function CH(){ return SH()-60; }
-function CX(){ return SW()/2; }
-function CY(){ return CH()/2; }
-
-/* ADAPTIVE SIZES based on actual screen */
-function S(){
-  var w=SW();
-  if(w<=420)  return {hHW:55,hHH:63,hexW:64,hexH:74,hexHW:32,hexHH:37,bHW:17,lH:12,svgW:110,svgH:126};
-  if(w<=480)  return {hHW:65,hHH:74,hexW:70,hexH:80,hexHW:35,hexHH:40,bHW:18,lH:13,svgW:130,svgH:149};
-  if(w<=768)  return {hHW:75,hHH:86,hexW:78,hexH:88,hexHW:39,hexHH:44,bHW:21,lH:15,svgW:150,svgH:172};
-  return       {hHW:80,hHH:91,hexW:82,hexH:94,hexHW:41,hexHH:47,bHW:22,lH:16,svgW:160,svgH:183};
-}
-
-/* POSITION HIVE in center of canvas */
-function positionHive(){
-  var hw=document.getElementById('hw');
-  var hsv=document.getElementById('hsv');
-  if(!hw||!hsv) return;
-  var s=S();
-  hsv.setAttribute('width',s.svgW);
-  hsv.setAttribute('height',s.svgH);
-  hw.style.left=CX()+'px';
-  hw.style.top=CY()+'px';
-}
-
-/* RING RADII */
-function IR(){
-  var s=S();
-  var r=s.hHH+16+s.hexHH;
-  var maxR=Math.min(CX()-s.hexHW-6, CY()-s.hexHH-6);
-  return Math.max(Math.min(r,maxR),90);
-}
-function OR(){
-  var s=S(), ir=IR();
-  var diag=Math.sqrt(s.hexW*s.hexW+s.hexH*s.hexH)/2;
-  var minR=ir+diag+8;
-  // ALWAYS cap at screen edge - never clip
-  var maxR=Math.min(CX()-s.bHW-4, CY()-s.bHW-4);
-  return Math.min(Math.max(minR,150), maxR);
-}
-
-/* ELEMENT POSITIONS */
-function corePos(i,n){
-  var a=(i/n)*Math.PI*2-Math.PI/2;
-  var s=S(),r=IR();
-  return {x:CX()+Math.cos(a)*r-s.hexHW, y:CY()+Math.sin(a)*r-s.hexHH};
-}
-function beePos(i,n){
-  var a=(i/n)*Math.PI*2-Math.PI/2;
-  var s=S(),r=OR();
-  return {x:CX()+Math.cos(a)*r-s.bHW, y:CY()+Math.sin(a)*r-s.bHW-s.lH};
-}
-function homeP(isHex){
-  var s=S();
-  return isHex ? {x:CX()-s.hexHW,y:CY()-s.hexHH} : {x:CX()-s.bHW,y:CY()-s.bHW-s.lH};
-}
-
-/* BEE SVG */
-function beeSVG(i){
-  return '<svg class="bsv" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" style="display:block">'
-    +'<defs><linearGradient id="bg'+i+'" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stop-color="#fde68a"/><stop offset="100%" stop-color="#f59e0b"/></linearGradient></defs>'
-    +'<ellipse cx="13" cy="24" rx="11" ry="6.5" fill="rgba(186,230,255,0.8)" transform="rotate(-22,13,24)"/>'
-    +'<ellipse cx="47" cy="24" rx="11" ry="6.5" fill="rgba(186,230,255,0.8)" transform="rotate(22,47,24)"/>'
-    +'<ellipse cx="12" cy="31" rx="8.5" ry="5" fill="rgba(186,230,255,0.55)" transform="rotate(-16,12,31)"/>'
-    +'<ellipse cx="48" cy="31" rx="8.5" ry="5" fill="rgba(186,230,255,0.55)" transform="rotate(16,48,31)"/>'
-    +'<ellipse cx="30" cy="37" rx="11" ry="14" fill="url(#bg'+i+')"/>'
-    +'<rect x="19" y="33" width="22" height="5" rx="2.5" fill="#0a0500" opacity="0.6"/>'
-    +'<rect x="19" y="40" width="22" height="5" rx="2.5" fill="#0a0500" opacity="0.6"/>'
-    +'<circle cx="30" cy="20" r="9" fill="url(#bg'+i+')"/>'
-    +'<circle cx="26" cy="18" r="3" fill="#fff"/><circle cx="34" cy="18" r="3" fill="#fff"/>'
-    +'<circle cx="27" cy="18" r="1.7" fill="#050200"/><circle cx="35" cy="18" r="1.7" fill="#050200"/>'
+/* -- BEE SVG -- */
+function beeSVG(seed){
+  var colors=['#f59e0b','#fbbf24','#f59e0b'];
+  return '<svg class="bsv" viewBox="0 0 60 60" width="58" height="58" xmlns="http://www.w3.org/2000/svg">'
+    +'<defs><linearGradient id="wg'+seed+'" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stop-color="#fde68a"/><stop offset="100%" stop-color="#f59e0b"/></linearGradient></defs>'
+    +'<ellipse cx="13" cy="24" rx="11" ry="6.5" fill="rgba(190,235,255,0.8)" transform="rotate(-22,13,24)"/>'
+    +'<ellipse cx="47" cy="24" rx="11" ry="6.5" fill="rgba(190,235,255,0.8)" transform="rotate(22,47,24)"/>'
+    +'<ellipse cx="12" cy="31" rx="8.5" ry="5" fill="rgba(190,235,255,0.55)" transform="rotate(-16,12,31)"/>'
+    +'<ellipse cx="48" cy="31" rx="8.5" ry="5" fill="rgba(190,235,255,0.55)" transform="rotate(16,48,31)"/>'
+    +'<ellipse cx="30" cy="37" rx="11" ry="14" fill="url(#wg'+seed+')"/>'
+    +'<rect x="19" y="33" width="22" height="5" rx="2.5" fill="#0a0500" opacity="0.62"/>'
+    +'<rect x="19" y="40" width="22" height="5" rx="2.5" fill="#0a0500" opacity="0.62"/>'
+    +'<circle cx="30" cy="20" r="9" fill="url(#wg'+seed+')"/>'
+    +'<circle cx="26" cy="18" r="3" fill="#fff"/>'
+    +'<circle cx="34" cy="18" r="3" fill="#fff"/>'
+    +'<circle cx="27" cy="18" r="1.7" fill="#050200"/>'
+    +'<circle cx="35" cy="18" r="1.7" fill="#050200"/>'
+    +'<circle cx="27.6" cy="17.3" r="0.65" fill="#fff"/>'
+    +'<circle cx="35.6" cy="17.3" r="0.65" fill="#fff"/>'
     +'<path d="M25 23 Q30 27 35 23" stroke="#78350f" stroke-width="1.5" fill="none" stroke-linecap="round"/>'
     +'<line x1="25" y1="11" x2="21" y2="5" stroke="#0a0500" stroke-width="1.5" stroke-linecap="round"/>'
     +'<line x1="35" y1="11" x2="39" y2="5" stroke="#0a0500" stroke-width="1.5" stroke-linecap="round"/>'
-    +'<circle cx="21" cy="4.5" r="2.4" fill="#f59e0b"/><circle cx="39" cy="4.5" r="2.4" fill="#f59e0b"/>'
+    +'<circle cx="21" cy="4.5" r="2.4" fill="#f59e0b"/>'
+    +'<circle cx="39" cy="4.5" r="2.4" fill="#f59e0b"/>'
     +'<polygon points="30,51 27,57 33,57" fill="#b45309"/>'
     +'</svg>';
 }
 
-/* BUILD DOM */
+/* -- POSITIONING -- */
+function gc(){
+  var cvEl = document.getElementById('cv');
+  if(cvEl){
+    var w = cvEl.offsetWidth  || cvEl.clientWidth  || window.innerWidth;
+    var h = cvEl.offsetHeight || cvEl.clientHeight || (window.innerHeight - 60);
+    return {x: w/2, y: h/2};
+  }
+  return {x: window.innerWidth/2, y: (window.innerHeight - 60)/2};
+}
+
+function corePos(i,n){
+  var a=(i/n)*Math.PI*2-Math.PI/2;
+  var c=gc();
+  // Scale radius to screen - smaller on mobile
+  var hiveR = window.innerWidth < 768 ? 90 : 130;
+  var hexH  = window.innerWidth < 768 ? 47 : 62;
+  var hexW  = window.innerWidth < 768 ? 41 : 54;
+  var r = Math.min(hiveR + (window.innerWidth < 768 ? 82 : 115), Math.min(c.x, c.y) * 0.44);
+  return {x:c.x+Math.cos(a)*r-hexW, y:c.y+Math.sin(a)*r-hexH};
+}
+
+function beePos(i,n){
+  var a=(i/n)*Math.PI*2-Math.PI/2;
+  var c=gc();
+  var isMobile = window.innerWidth < 768;
+  // Outer ring: must clear inner hex ring
+  // Mobile: inner r~172, hex diag~65 => outer min ~237
+  // Desktop: inner r~245, hex diag~78 => outer min ~285
+  var minR  = isMobile ? 200 : 265;
+  var margin = isMobile ? 52 : 80;
+  var maxR  = Math.min(c.x - margin, c.y - margin);
+  var r = Math.max(Math.min(maxR, isMobile ? 260 : 340), minR);
+  var rx = Math.min(c.x - margin, r);
+  var ry = Math.min(c.y - margin, r);
+  var beeOff = isMobile ? 22 : 29;
+  return {
+    x: c.x + Math.cos(a)*rx - beeOff,
+    y: c.y + Math.sin(a)*ry - (beeOff + 15)
+  };
+}
+
+/* -- BUILD -- */
 function build(){
-  positionHive();
   var cv=document.getElementById('cv');
-  var hp=homeP(true), bp=homeP(false);
+  var c=gc();
+
   CORE.forEach(function(p,i){
-    if(document.getElementById('hx-'+p.id)) return;
-    var s=S(), el=document.createElement('div');
+    var el=document.createElement('div');
     el.className='hxc'; el.id='hx-'+p.id;
-    el.style.width=s.hexW+'px'; el.style.height=s.hexH+'px';
-    el.style.left=hp.x+'px'; el.style.top=hp.y+'px';
     el.innerHTML='<div class="hxi"><div class="hico">'+p.icon+'</div><div class="hnm">'+p.name+'</div><div class="hsb">'+p.sub+'</div></div>';
+    el.style.left=(c.x-59)+'px'; el.style.top=(c.y-68)+'px';
     el.onclick=function(e){e.stopPropagation();oM(p.id);};
     cv.appendChild(el);
   });
+
   PARTNERS.forEach(function(p,i){
-    if(document.getElementById('bp-'+p.id)) return;
-    var s=S(), el=document.createElement('div');
+    var el=document.createElement('div');
     el.className='bep'; el.id='bp-'+p.id;
-    el.style.width=s.svgW>140 ? '44px' : s.svgW>120 ? '40px' : '36px';
-    el.style.height='100%';
-    el.style.left=bp.x+'px'; el.style.top=bp.y+'px';
-    el.style.animationDelay=(i*0.18)+'s';
+    el.style.left=(c.x-29)+'px'; el.style.top=(c.y-34)+'px';
+    el.style.animationDelay=(Math.random()*2.5)+'s';
     el.innerHTML='<div class="bnt">'+p.name+'</div>'+beeSVG(i);
     el.onclick=function(e){e.stopPropagation();oM(p.id);};
     cv.appendChild(el);
   });
 }
 
-/* OPEN HIVE */
+/* -- OPEN -- */
 function openHive(){
   if(isOpen) return;
   isOpen=true;
-  positionHive();
   document.getElementById('hint').classList.add('hid');
   document.getElementById('rb').classList.add('sh');
+
+  // Shake
   var hw=document.getElementById('hw');
   hw.style.transition='transform 0.08s ease';
-  hw.style.transform='translate(-50%,-50%) rotate(-4deg) scale(1.04)';
+  hw.style.transform='translate(-50%,-50%) rotate(-5deg) scale(1.04)';
   setTimeout(function(){
-    hw.style.transition='transform 0.45s cubic-bezier(0.34,1.56,0.64,1)';
+    hw.style.transition='transform 0.5s cubic-bezier(0.34,1.56,0.64,1)';
     hw.style.transform='translate(-50%,-50%) rotate(0deg) scale(1)';
   },80);
+
+  var c=gc();
+
+  // Bloom hex cells: set position first, then animate in on next frame
   CORE.forEach(function(p,i){
     var pos=corePos(i,CORE.length);
-    var el=document.getElementById('hx-'+p.id); if(!el) return;
+    var el=document.getElementById('hx-'+p.id);
+    // Remove any transition, snap to position
     el.style.transition='none';
-    el.style.left=pos.x+'px'; el.style.top=pos.y+'px';
+    el.style.left=pos.x+'px';
+    el.style.top=pos.y+'px';
+    // Force reflow so browser registers the position before animating
     void el.offsetWidth;
-    setTimeout(function(){ el.classList.add('bl'); },80+i*55);
+    // Now animate scale+opacity in with stagger
+    var delay = i * 60;
+    setTimeout(function(){
+      el.classList.add('bl');
+    }, delay + 100);
   });
+
+  // Scatter bees: snap positions, then burst animate all at once
+  PARTNERS.forEach(function(p,i){
+    var pos=beePos(i,PARTNERS.length);
+    var el=document.getElementById('bp-'+p.id);
+    // Snap to final position (invisible still)
+    el.style.transition='none';
+    el.style.left=pos.x+'px';
+    el.style.top=pos.y+'px';
+    void el.offsetWidth;
+  });
+  // Now burst all bees visible simultaneously after short delay
   setTimeout(function(){
-    PARTNERS.forEach(function(p,i){
-      var pos=beePos(i,PARTNERS.length);
-      var el=document.getElementById('bp-'+p.id); if(!el) return;
-      el.style.transition='none';
-      el.style.left=pos.x+'px'; el.style.top=pos.y+'px';
-      void el.offsetWidth;
+    PARTNERS.forEach(function(p){
+      var el=document.getElementById('bp-'+p.id);
       el.classList.add('sc');
     });
-  },320);
+  }, 350);
 }
 
-/* RESET HIVE */
+/* -- RESET -- */
 function resetHive(){
   isOpen=false;
   document.getElementById('hint').classList.remove('hid');
   document.getElementById('rb').classList.remove('sh');
-  var hp=homeP(true), bp=homeP(false);
+  var c=gc();
   CORE.forEach(function(p){
-    var el=document.getElementById('hx-'+p.id); if(!el) return;
+    var el=document.getElementById('hx-'+p.id);
     el.classList.remove('bl');
-    setTimeout(function(){ el.style.transition='none'; el.style.left=hp.x+'px'; el.style.top=hp.y+'px'; },300);
+    setTimeout(function(){
+      el.style.transition='none';
+      el.style.left=(c.x-54)+'px';
+      el.style.top=(c.y-62)+'px';
+    }, 300);
   });
   PARTNERS.forEach(function(p){
-    var el=document.getElementById('bp-'+p.id); if(!el) return;
+    var el=document.getElementById('bp-'+p.id);
     el.classList.remove('sc');
-    setTimeout(function(){ el.style.transition='none'; el.style.left=bp.x+'px'; el.style.top=bp.y+'px'; },300);
+    setTimeout(function(){
+      el.style.transition='none';
+      el.style.left=(c.x-29)+'px';
+      el.style.top=(c.y-44)+'px';
+    }, 300);
   });
 }
 
-function rebuildAll(){
-  setHiveHeight();
-  if(isOpen){ resetHive(); setTimeout(function(){ positionHive(); setTimeout(openHive,200); },400); }
-  else{ positionHive(); }
+/* -- MODAL -- */
+function allData(){
+  var m={};
+  CORE.forEach(function(d){m[d.id]=d;});
+  PARTNERS.forEach(function(d){m[d.id]=d;});
+  return m;
 }
-window.addEventListener('resize',rebuildAll);
-window.addEventListener('orientationchange',function(){ setTimeout(function(){ setHiveHeight(); rebuildAll(); },500); });
 
-/* MODAL */
-var SMAP={mfg:'section-mfg',scade:'section-scade',wisdom:'section-wisdom',agents:'section-agents',conn:'section-conn',fridayhex:'section-friday',wx1i:'section-wx1i',friday:'section-friday',iam:'section-iam',macvaar:'section-macvaar',oip:'section-oip',taligens:'section-taligens',igebra:'section-igebra',moon:'section-moon',iscott:'section-iscott',wx1:'section-wx1',aatek:'section-aatek',synth:'section-synth',brilliqs:'section-brilliqs',testfold:'section-testfold',aevolan:'section-aevolan'};
-
-function allData(){ var m={}; CORE.forEach(function(d){m[d.id]=d;}); PARTNERS.forEach(function(d){m[d.id]=d;}); return m; }
-
-function oM(key){
-  CURRENT_KEY=key;
+function oM(key){ CURRENT_KEY = key;
   var d=allData()[key]; if(!d) return;
   document.getElementById('mIc').innerHTML=d.icon;
   document.getElementById('mTl').textContent=d.name+(d.region?' ('+d.region+')':d.sub?' - '+d.sub:'');
-  var ct=document.getElementById('mCt'); ct.textContent=d.cat; ct.style.background=d.catBg; ct.style.color=d.catC;
+  var ct=document.getElementById('mCt');
+  ct.textContent=d.cat; ct.style.background=d.catBg; ct.style.color=d.catC;
   document.getElementById('mDs').textContent=d.desc;
   var pl=document.getElementById('mPl'); pl.innerHTML='';
-  d.pills.forEach(function(p){ var s=document.createElement('span'); s.className='mpi'; s.textContent=p; s.style.background=d.catBg; s.style.color=d.catC; s.style.border='1px solid '+d.catC+'44'; pl.appendChild(s); });
-  var bn=document.getElementById('mBn'); bn.textContent=d.btn;
-  var cs=!d.url; bn.className='mbn'+(cs?' cs':'');
-  if(!cs){ bn.style.background=d.catC; bn.style.boxShadow='0 4px 14px '+d.catC+'44'; } else { bn.style.background=''; bn.style.boxShadow='none'; }
-  CU=d.url;
-  var sb=document.getElementById('mScr'); if(sb) sb.style.display=SMAP[key]?'block':'none';
+  d.pills.forEach(function(p){
+    var s=document.createElement('span'); s.className='mpi'; s.textContent=p;
+    s.style.background=d.catBg; s.style.color=d.catC; s.style.border='1px solid '+d.catC+'44';
+    pl.appendChild(s);
+  });
+  var bn=document.getElementById('mBn');
+  bn.textContent=d.btn;
+  var cs=!d.url;
+  bn.className='mbn'+(cs?' cs':'');
+  if(!cs){bn.style.background=d.catC;bn.style.boxShadow='0 4px 16px '+d.catC+'44';}
+  else{bn.style.background='';bn.style.boxShadow='none';}
+  CU=d.url; var sBtn=document.getElementById("mScr"); if(sBtn){ var secId=SCROLL_MAP[key]; sBtn.style.display=secId?"block":"none"; }
   document.getElementById('mbd').classList.add('op');
   document.body.style.overflow='hidden';
 }
+
+
 function vM(){
   if(!CU) return;
-  if(CU==='paios.html') window.open('paios.html','_blank');
-  else { var a=document.createElement('a'); a.href=CU; a.target='_blank'; a.rel='noopener'; document.body.appendChild(a); a.click(); setTimeout(function(){ document.body.removeChild(a); },200); }
+  if(CU === 'paios.html'){
+    // Check if we're on a server (not file://)
+    if(window.location.protocol === 'file:'){
+      showPAIOS();
+    } else {
+      window.open('index.html','_blank');
+    }
+  } else {
+    var a = document.createElement('a');
+    a.href = CU;
+    a.target = '_blank';
+    a.rel = 'noopener noreferrer';
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(function(){ document.body.removeChild(a); }, 200);
+  }
 }
+
+function showPAIOS(){
+  cM();
+  var ov = document.getElementById('paios-ov');
+  if(ov){ ov.style.display='flex'; document.body.style.overflow='hidden'; return; }
+  ov = document.createElement('div');
+  ov.id = 'paios-ov';
+  ov.style.cssText = 'position:fixed;inset:0;z-index:9999;background:#0d121b;display:flex;flex-direction:column;align-items:center;justify-content:center;';
+  ov.innerHTML =
+    '<div style="position:absolute;top:0;left:0;right:0;display:flex;align-items:center;justify-content:space-between;padding:12px 18px;background:#0a0f1a;border-bottom:1px solid #1e293b;">' +
+      '<span style="font-family:Inter,sans-serif;font-size:14px;font-weight:800;color:#4f6bff;">PAIOS Platform</span>' +
+      '<button onclick="closePAIOS()" style="background:#1e293b;border:none;color:#94a3b8;font-size:13px;font-weight:700;padding:7px 16px;border-radius:8px;cursor:pointer;font-family:Inter,sans-serif;">Close</button>' +
+    '</div>' +
+    '<div style="text-align:center;padding:40px 24px;">' +
+      '<div style="font-size:56px;margin-bottom:20px;">?</div>' +
+      '<div style="font-family:Inter,sans-serif;font-size:22px;font-weight:900;color:#fff;margin-bottom:10px;">PAIOS Platform</div>' +
+      '<div style="font-family:Inter,sans-serif;font-size:14px;color:rgba(255,255,255,0.5);margin-bottom:32px;line-height:1.6;max-width:320px;">The full PAIOS platform opens when both files are hosted together. Place <strong style=color:#4f6bff>paios.html</strong> and <strong style=color:#4f6bff>index.html</strong> in the same GitHub repo folder and deploy to Vercel.</div>' +
+      '<div style="display:flex;flex-direction:column;gap:12px;width:100%;max-width:300px;">' +
+        '<div style="background:rgba(79,107,255,0.1);border:1px solid rgba(79,107,255,0.3);border-radius:12px;padding:14px 16px;font-family:JetBrains Mono,monospace;font-size:12px;color:#7899ff;text-align:left;">' +
+          '1. Upload index.html + paios.html to Vercel<br>' +
+          '2. Keep both in repo root<br>' +
+          '3. PAIOS opens from hive automatically' +
+        '</div>' +
+      '</div>' +
+    '</div>';
+  document.body.appendChild(ov);
+  document.body.style.overflow = 'hidden';
+}
+
+function closePAIOS(){
+  var ov = document.getElementById('paios-ov');
+  if(ov) ov.style.display = 'none';
+  document.body.style.overflow = '';
+}
+function cM(){document.getElementById('mbd').classList.remove('op');document.body.style.overflow='';CU=null;}
+function cMBd(e){if(e.target===document.getElementById('mbd')) cM();}
+document.addEventListener('keydown',function(e){if(e.key==='Escape') cM();});
+
+window.addEventListener('load',function(){ requestAnimationFrame(function(){ setTimeout(build, 100); }); });
+window.addEventListener('resize',function(){
+  if(!isOpen) return;
+  resetHive(); setTimeout(openHive,120);
+});
+
+var CURRENT_KEY = null;
+
+function vM(){
+  if(!CU) return;
+  if(CU === 'paios.html'){
+    window.open('paios.html','_blank');
+  } else {
+    var a = document.createElement('a');
+    a.href = CU;
+    a.target = '_blank';
+    a.rel = 'noopener noreferrer';
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(function(){ document.body.removeChild(a); }, 200);
+  }
+}
+
+var SCROLL_MAP = {"mfg": "section-mfg", "fridayhex": "section-friday", "scade": "section-scade", "wisdom": "section-wisdom", "agents": "section-agents", "conn": "section-conn", "fridayhex": "section-friday", "paios": "section-paios", "wx1i": "section-wx1i", "friday": "section-friday", "iam": "section-iam", "macvaar": "section-macvaar", "oip": "section-oip", "taligens": "section-taligens", "igebra": "section-igebra", "moon": "section-moon", "iscott": "section-iscott", "wx1": "section-wx1", "aatek": "section-aatek", "synth": "section-synth", "brilliqs": "section-brilliqs", "testfold": "section-testfold", "aevolan": "section-aevolan"};
+
 function scrollToSection(){
   cM();
   if(!CURRENT_KEY) return;
-  var sid=SMAP[CURRENT_KEY]; if(!sid) return;
-  setTimeout(function(){
-    var el=document.getElementById(sid); if(!el) return;
-    window.scrollTo({top:el.getBoundingClientRect().top+window.scrollY-72,behavior:'smooth'});
-    el.style.transition='box-shadow 0.3s';
-    el.style.boxShadow='0 0 0 3px rgba(217,119,6,0.4),0 8px 32px rgba(15,23,42,0.1)';
-    setTimeout(function(){ el.style.boxShadow=''; },2500);
-  },300);
-}
-function cM(){ document.getElementById('mbd').classList.remove('op'); document.body.style.overflow=''; CU=null; }
-function cMBd(e){ if(e.target===document.getElementById('mbd')) cM(); }
-document.addEventListener('keydown',function(e){ if(e.key==='Escape') cM(); });
-
-/* BACK TO TOP */
-function backToTop(){
-  window.scrollTo({top:0,behavior:'smooth'});
-  setTimeout(function(){ if(!isOpen) openHive(); },700);
-}
-window.addEventListener('scroll',function(){
-  var b=document.getElementById('btt'); if(!b) return;
-  (window.pageYOffset>window.innerHeight*0.4)?b.classList.add('visible'):b.classList.remove('visible');
-},{passive:true});
-
-/* AGENT */
-function scoreP(p,q){ var ql=q.toLowerCase(),w=ql.split(/\s+/),s=0; p.keywords.forEach(function(k){ if(ql.indexOf(k)>=0) s+=2; else w.forEach(function(wd){ if(k.indexOf(wd)>=0&&wd.length>2) s+=1; }); }); return s; }
-function agentSearch(){
-  var inp=document.getElementById('agent-input'),q=inp.value.trim(); if(!q) return;
-  addAMsg(q,'user'); inp.value='';
-  var sc=HIVE_KB.map(function(p){ return {p:p,s:scoreP(p,q)}; }).sort(function(a,b){ return b.s-a.s; });
-  var top=sc.filter(function(x){ return x.s>=2; }).slice(0,3);
-  var re=document.getElementById('agent-results'); re.innerHTML='';
-  if(!top.length){
-    addAMsg('Let us connect you directly with our team.','bot');
-    var c=document.createElement('div'); c.className='agent-result-card';
-    c.innerHTML='<div class="arc-top"><div class="arc-icon">&#x1F41D;</div><div><div class="arc-name">Talk to HiveWise</div><div class="arc-why">Our team will find the right fit for your needs.</div></div></div>';
-    var btns=document.createElement('div'); btns.className='arc-btns';
-    var ea=document.createElement('a'); ea.className='arc-btn primary'; ea.href='mailto:hive.wise@outlook.com?subject=HiveWise Enquiry&body=I need help with: '+encodeURIComponent(q); ea.textContent='Email us';
-    var ca=document.createElement('a'); ca.className='arc-btn secondary'; ca.href='#contact'; ca.textContent='Contact form'; ca.onclick=function(){ toggleAgent(); };
-    btns.appendChild(ea); btns.appendChild(ca); c.appendChild(btns); re.appendChild(c);
-  } else {
-    addAMsg((top.length===1?'Best match':'Top matches')+' for your need:','bot');
-    top.forEach(function(item){
-      var p=item.p, c=document.createElement('div'); c.className='agent-result-card';
-      var t=document.createElement('div'); t.className='arc-top';
-      var ic=document.createElement('div'); ic.className='arc-icon'; ic.innerHTML=p.icon;
-      var inf=document.createElement('div'); inf.innerHTML='<div class="arc-name">'+p.name+'</div><div class="arc-why">'+p.tagline+'</div>';
-      t.appendChild(ic); t.appendChild(inf); c.appendChild(t);
-      var btns=document.createElement('div'); btns.className='arc-btns';
-      var va=document.createElement('a'); va.className='arc-btn primary'; va.href=p.url; va.target='_blank'; va.textContent='Visit '+p.name;
-      var cb=document.createElement('button'); cb.className='arc-btn secondary'; cb.textContent='Connect via HiveWise';
-      (function(pn){ cb.onclick=function(){ toggleAgent(); setTimeout(function(){ var ct=document.getElementById('contact'); if(ct) window.scrollTo({top:ct.getBoundingClientRect().top+window.scrollY-72,behavior:'smooth'}); setTimeout(function(){ var sel=document.getElementById('hw-interest'); if(!sel) return; var f=pn.toLowerCase().split(' ')[0]; for(var j=0;j<sel.options.length;j++){ if(sel.options[j].text.toLowerCase().indexOf(f)>=0){ sel.selectedIndex=j; break; } } },600); },300); }; })(p.name);
-      btns.appendChild(va); btns.appendChild(cb); c.appendChild(btns); re.appendChild(c);
-    });
-    var rst=document.createElement('div'); rst.style.cssText='text-align:center;padding-top:4px';
-    rst.innerHTML='<button onclick="agentReset()" style="background:none;border:none;font-size:10px;color:#d97706;cursor:pointer;font-family:inherit;font-weight:600;">Ask another question</button>';
-    re.appendChild(rst);
+  var secId = SCROLL_MAP[CURRENT_KEY];
+  if(!secId) return;
+  var el = document.getElementById(secId);
+  if(el){
+    setTimeout(function(){
+      var top = el.getBoundingClientRect().top + window.scrollY - 72;
+      window.scrollTo({top: top, behavior: 'smooth'});
+      el.style.transition = 'box-shadow 0.3s';
+      el.style.boxShadow = '0 0 0 3px rgba(217,119,6,0.4), 0 8px 32px rgba(15,23,42,0.12)';
+      setTimeout(function(){ el.style.boxShadow = ''; }, 2500);
+    }, 300);
   }
 }
-function addAMsg(t,tp){ var m=document.getElementById('agent-msgs'),d=document.createElement('div'); d.className='agent-msg '+tp; d.textContent=t; m.appendChild(d); m.scrollTop=m.scrollHeight; }
-function agentReset(){ document.getElementById('agent-msgs').innerHTML='<div class="agent-msg bot">What else can I help you find?</div>'; document.getElementById('agent-results').innerHTML=''; document.getElementById('agent-input').focus(); }
-function toggleAgent(){
-  var p=document.getElementById('hive-agent-panel');
-  if(!agentOpen){ p.style.display='flex'; agentOpen=true; document.getElementById('agent-input').focus(); }
-  else{ p.style.display='none'; agentOpen=false; }
-}
 
-/* CONTACT FORM */
+
 var RESEND_READY = false;
 
 function hwSubmitForm() {
@@ -1909,67 +1919,5 @@ function toggleAgent(){
 }
 </script>
 
-
-<script>
-// DEBUG OVERLAY - shows viewport and position data
-function showDebug(){
-  var existing = document.getElementById('dbg');
-  if(existing){ existing.remove(); return; }
-  var vmin = Math.min(window.innerWidth, window.innerHeight-60);
-  var isMobile = window.innerWidth < 768;
-  var hiveHW = isMobile ? 80 : 120;
-  var hiveHH = isMobile ? 91 : 137;
-  var hexHalfW2 = isMobile ? 41 : 54;
-  var hexHalfH2 = isMobile ? 47 : 62;
-  var innerR = Math.min(Math.max(hiveHW,hiveHH)+12+Math.max(hexHalfW2,hexHalfH2), Math.min(window.innerWidth/2-hexHalfW2-6,(window.innerHeight-60)/2-hexHalfH2-6));
-  var hexDiag2 = Math.sqrt(hexHalfW2*hexHalfW2+hexHalfH2*hexHalfH2);
-  var outerR = Math.min(Math.max(innerR+hexDiag2+8, isMobile?210:270), Math.min(window.innerWidth/2-30,(window.innerHeight-60)/2-46));
-  var cv = document.getElementById('cv');
-  var cvRect = cv ? cv.getBoundingClientRect() : {};
-  var d = document.createElement('div');
-  d.id = 'dbg';
-  d.style.cssText = 'position:fixed;top:70px;left:0;right:0;z-index:9999;background:rgba(0,0,0,0.85);color:#0f0;font-family:monospace;font-size:11px;padding:10px 14px;line-height:1.8;';
-  d.innerHTML = 
-    'window.innerWidth: <b>' + window.innerWidth + '</b><br>' +
-    'window.innerHeight: <b>' + window.innerHeight + '</b><br>' +
-    'innerHeight-60: <b>' + (window.innerHeight-60) + '</b><br>' +
-    'vmin: <b>' + Math.round(vmin) + '</b><br>' +
-    'isMobile: <b>' + isMobile + '</b><br>' +
-    'innerRing r: <b>' + Math.round(innerR) + 'px</b><br>' +
-    'outerRing r: <b>' + Math.round(outerR) + 'px</b><br>' +
-    'cv.offsetW: <b>' + (cv ? cv.offsetWidth : 'null') + '</b><br>' +
-    'cv.offsetH: <b>' + (cv ? cv.offsetHeight : 'null') + '</b><br>' +
-    'cv.top: <b>' + Math.round(cvRect.top||0) + ' cv.h: ' + Math.round(cvRect.height||0) + '</b><br>' +
-    (function(){var hw=document.getElementById('hw'); var hr=hw?hw.getBoundingClientRect():{};
-     return 'hw.left: <b>'+Math.round(hr.left||0)+' hw.top: '+Math.round(hr.top||0)+'</b><br>';})() +
-    '<span style="color:#ff0">Tap again to close</span>';
-  document.body.appendChild(d);
-}
-// Triple-tap the hive title to show debug
-var tapCount = 0;
-document.querySelector('.hdr-logo').addEventListener('click', function(){
-  tapCount++;
-  if(tapCount >= 3){ showDebug(); tapCount=0; }
-  setTimeout(function(){ tapCount=0; }, 1000);
-});
-
-
-/* SET HIVE SECTION HEIGHT */
-function setHiveHeight(){
-  var sec = document.getElementById('hive-section');
-  if(sec) sec.style.height = window.innerHeight + 'px';
-}
-
-/* INIT */
-window.addEventListener('DOMContentLoaded',function(){
-  setHiveHeight();
-  positionHive();
-  build();
-});
-
-window.addEventListener('resize', function(){
-  setHiveHeight();
-});
-</script>
 </body>
 </html>
