@@ -1,0 +1,2061 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HiveWise -- The Intelligence Ecosystem</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'Inter',sans-serif;background:#f8fafc;color:#0d121b;overflow-x:hidden}
+
+/* NAV */
+.hdr{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(248,250,252,0.95);backdrop-filter:blur(12px);border-bottom:1px solid #e2e8f0;display:flex;align-items:center;justify-content:space-between;padding:0 24px;height:60px}
+.hdr-logo{font-size:18px;font-weight:900;color:#0d121b;display:flex;align-items:center;gap:8px;text-decoration:none}
+.hdr-logo span{color:#d97706}
+.hdr-links{display:flex;gap:4px}
+.hdr-link{font-size:12px;font-weight:600;color:#626a75;text-decoration:none;padding:5px 10px;border-radius:7px;transition:all 0.15s}
+.hdr-link:hover{background:#ecf2ff;color:#4f6bff}
+.hdr-cta{font-size:12px;font-weight:700;color:#fff;background:#d97706;padding:7px 14px;border-radius:8px;text-decoration:none;white-space:nowrap}
+.hdr-cta:hover{background:#b45309}
+@media(max-width:600px){.hdr-links{display:none}.hdr{padding:0 14px}}
+
+/* HIVE SECTION
+   Height set by JS to window.innerHeight - most reliable cross-browser
+   No CSS height here intentionally */
+#hive-section{
+  position:relative;
+  overflow:hidden;
+  background:linear-gradient(160deg,#f8fafc 0%,#f1f5f9 50%,#f8fafc 100%);
+  flex-shrink:0;
+}
+.bghex{position:absolute;inset:0;opacity:0.04;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='104'%3E%3Cpath d='M30 2L58 18L58 52L30 68L2 52L2 18Z' fill='none' stroke='%23f59e0b' stroke-width='1.5'/%3E%3C/svg%3E");background-size:60px 104px;pointer-events:none;z-index:0}
+.bg-glow{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(245,158,11,0.07) 0%,transparent 70%);pointer-events:none;z-index:0}
+
+/* CANVAS - starts at 60px (below fixed nav), fills to bottom of section */
+#cv{position:absolute;left:0;right:0;top:60px;bottom:0;z-index:2;overflow:hidden}
+
+/* HIVE - positioned by JS at (CX, CY) within #cv */
+#hw{position:absolute;cursor:pointer;user-select:none;z-index:3;transform:translate(-50%,-50%)}
+#hw:hover #hsv{filter:drop-shadow(0 0 40px rgba(196,154,40,0.55)) !important}
+
+/* PULSE RINGS - children of #hw, centered on hive body */
+.pr{position:absolute;border-radius:50%;border:1.5px solid rgba(217,119,6,0.2);
+  animation:rp 2.8s ease-out infinite;pointer-events:none;
+  left:50%;top:47%;transform:translate(-50%,-50%)}
+.pr:nth-child(2){animation-delay:0.93s}
+.pr:nth-child(3){animation-delay:1.86s}
+@keyframes rp{0%{width:140px;height:140px;opacity:0.6}100%{width:500px;height:500px;opacity:0}}
+
+#hint{position:absolute;bottom:20px;left:50%;transform:translateX(-50%);font-size:12px;color:#92400e;font-family:'JetBrains Mono',monospace;letter-spacing:0.08em;white-space:nowrap;transition:opacity 0.4s;display:flex;align-items:center;gap:8px;background:rgba(254,243,199,0.9);border:1px solid rgba(217,119,6,0.2);padding:7px 16px;border-radius:100px;z-index:5}
+#hint.hid{opacity:0;pointer-events:none}
+.hd{width:7px;height:7px;border-radius:50%;background:#d97706;animation:hda 2s infinite;flex-shrink:0}
+@keyframes hda{0%,100%{opacity:1}50%{opacity:0.3}}
+
+/* HEX CELLS */
+.hxc{position:absolute;cursor:pointer;opacity:0;transform:scale(0.05);transition:none;z-index:6;pointer-events:none}
+.hxc.bl{opacity:1;transform:scale(1) !important;transition:opacity 0.4s ease,transform 0.45s cubic-bezier(0.34,1.56,0.64,1);pointer-events:auto}
+.hxc:hover{z-index:20}
+.hxc:hover .hxi{filter:drop-shadow(0 0 14px rgba(217,119,6,0.5));transform:scale(1.08)}
+.hxi{width:100%;height:100%;clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:10px 8px;transition:transform 0.2s,filter 0.2s;background:linear-gradient(150deg,#fff8e8,#fef3c7);position:relative;overflow:hidden}
+.hxi::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(217,119,6,0.15),rgba(217,119,6,0.03))}
+.hxc::before{content:'';position:absolute;inset:-3px;clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);background:linear-gradient(135deg,rgba(217,119,6,0.5),rgba(245,158,11,0.2));z-index:-1}
+.hico{font-size:18px;margin-bottom:4px;position:relative;z-index:1;line-height:1}
+.hnm{font-size:8px;font-weight:800;color:#92400e;line-height:1.3;position:relative;z-index:1}
+.hsb{font-size:7px;color:#b45309;line-height:1.3;margin-top:2px;position:relative;z-index:1;opacity:0.7}
+
+/* BEES */
+.bep{position:absolute;cursor:pointer;opacity:0;z-index:8;pointer-events:none;transition:none}
+.bep.sc{opacity:1;pointer-events:auto;transition:opacity 0.4s ease;animation:bf 3s ease-in-out infinite}
+.bep:hover{animation:none !important;z-index:30}
+.bep:hover .bsv{transform:scale(1.2) translateY(-4px)}
+@keyframes bf{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-8px) rotate(2deg)}}
+.bsv{transition:transform 0.2s cubic-bezier(0.34,1.56,0.64,1);display:block}
+.bnt{position:absolute;top:calc(100% + 2px);left:50%;transform:translateX(-50%);background:rgba(255,255,255,0.95);border:1px solid rgba(217,119,6,0.3);color:#92400e;font-size:8px;font-weight:800;padding:2px 8px;border-radius:100px;white-space:nowrap;pointer-events:none;font-family:'Inter',sans-serif;box-shadow:0 1px 6px rgba(0,0,0,0.08)}
+
+/* CONTROLS */
+#rb{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#fff;border:1.5px solid #e2e8f0;color:#626a75;font-size:12px;font-weight:700;font-family:inherit;padding:8px 18px;border-radius:100px;cursor:pointer;opacity:0;pointer-events:none;z-index:50;box-shadow:0 2px 8px rgba(0,0,0,0.08);transition:all 0.2s}
+#rb.sh{opacity:1;pointer-events:auto}
+#rb:hover{border-color:#d97706;color:#92400e}
+#btt{position:fixed;bottom:22px;right:88px;z-index:200;width:44px;height:44px;border-radius:50%;background:#d97706;border:none;color:#fff;font-size:20px;cursor:pointer;box-shadow:0 4px 14px rgba(217,119,6,0.35);display:none;align-items:center;justify-content:center;transition:all 0.2s}
+#btt.visible{display:flex}
+#btt:hover{background:#b45309;transform:translateY(-2px)}
+
+/* MODAL */
+.mbd{position:fixed;inset:0;z-index:200;background:rgba(15,23,42,0.5);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;pointer-events:none;transition:opacity 0.22s}
+.mbd.op{opacity:1;pointer-events:auto}
+.mdl{background:#fff;border:1px solid #e2e8f0;border-radius:22px;width:100%;max-width:440px;box-shadow:0 24px 60px rgba(15,23,42,0.15);transform:scale(0.9) translateY(16px);transition:transform 0.3s cubic-bezier(0.34,1.56,0.64,1);overflow:hidden}
+.mbd.op .mdl{transform:scale(1) translateY(0)}
+.mhd{padding:22px 22px 16px;border-bottom:1px solid #f1f5f9;display:flex;align-items:flex-start;gap:12px}
+.mic{font-size:38px;line-height:1;flex-shrink:0}.mht{flex:1}
+.mtl{font-size:17px;font-weight:900;color:#0d121b;margin-bottom:5px;line-height:1.2}
+.mct{font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;padding:3px 10px;border-radius:100px;display:inline-block}
+.mx{width:28px;height:28px;border-radius:50%;background:#f1f5f9;border:none;color:#626a75;cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-left:auto}
+.mx:hover{background:#e2e8f0}
+.mby{padding:16px 22px 22px}
+.mds{font-size:13px;color:#475569;line-height:1.7;margin-bottom:12px}
+.mpl{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px}
+.mpi{font-size:10px;font-weight:600;padding:3px 10px;border-radius:100px}
+.mbn{display:block;width:100%;padding:12px;border-radius:11px;font-size:14px;font-weight:800;text-align:center;border:none;cursor:pointer;font-family:inherit;color:#fff;transition:transform 0.2s,box-shadow 0.2s}
+.mbn:hover{transform:translateY(-2px)}
+.mbn.cs{background:#e2e8f0;color:#9aa1ad;cursor:default}.mbn.cs:hover{transform:none}
+.m-scroll-btn{display:block;width:100%;padding:10px;border-radius:11px;font-size:13px;font-weight:700;text-align:center;border:1.5px solid #e2e8f0;cursor:pointer;font-family:inherit;color:#475569;background:#fff;margin-top:8px;transition:all 0.2s}
+.m-scroll-btn:hover{border-color:#d97706;color:#92400e}
+
+/* AGENT */
+#hive-agent-btn{position:fixed;bottom:22px;right:22px;z-index:300;width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,#d97706,#f59e0b);border:none;cursor:pointer;box-shadow:0 4px 18px rgba(217,119,6,0.4);display:flex;align-items:center;justify-content:center;font-size:22px;transition:all 0.25s}
+#hive-agent-btn:hover{transform:scale(1.1)}
+#hive-agent-badge{position:absolute;top:-3px;right:-3px;width:15px;height:15px;border-radius:50%;background:#10ae65;border:2px solid #fff}
+#hive-agent-panel{position:fixed;bottom:86px;right:16px;z-index:300;width:min(320px,calc(100vw - 24px));background:#fff;border:1px solid #e2e8f0;border-radius:20px;box-shadow:0 16px 48px rgba(15,23,42,0.16);display:none;flex-direction:column;overflow:hidden;font-family:'Inter',sans-serif;max-height:75vh}
+#hive-agent-panel.open{display:flex}
+.agent-header{background:linear-gradient(135deg,#d97706,#f59e0b);padding:12px 14px;display:flex;align-items:center;gap:10px;flex-shrink:0}
+.agent-header-icon{font-size:20px;line-height:1;flex-shrink:0}
+.agent-header-title{font-size:13px;font-weight:800;color:#fff;display:block}
+.agent-header-sub{font-size:10px;color:rgba(255,255,255,0.75);display:block;margin-top:1px}
+.agent-close{margin-left:auto;background:rgba(255,255,255,0.2);border:none;color:#fff;width:26px;height:26px;border-radius:50%;cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:center;font-family:inherit}
+.agent-messages{padding:12px;display:flex;flex-direction:column;gap:8px;max-height:200px;overflow-y:auto;flex-shrink:0}
+.agent-msg{font-size:12px;line-height:1.55;padding:9px 12px;border-radius:12px;max-width:92%}
+.agent-msg.bot{background:#f8fafc;border:1px solid #e2e8f0;color:#0d121b;align-self:flex-start;border-radius:4px 12px 12px 12px}
+.agent-msg.user{background:#d97706;color:#fff;align-self:flex-end;border-radius:12px 4px 12px 12px}
+.agent-results{padding:0 12px 10px;display:flex;flex-direction:column;gap:7px}
+.agent-result-card{background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:11px}
+.arc-top{display:flex;align-items:flex-start;gap:7px;margin-bottom:7px}
+.arc-icon{font-size:18px;flex-shrink:0;line-height:1}
+.arc-name{font-size:12px;font-weight:800;color:#0d121b}
+.arc-why{font-size:10px;color:#626a75;margin-top:2px;line-height:1.4}
+.arc-btns{display:flex;gap:5px;flex-wrap:wrap}
+.arc-btn{font-size:10px;font-weight:700;padding:4px 10px;border-radius:7px;border:1px solid transparent;cursor:pointer;text-decoration:none;display:inline-block;font-family:inherit;transition:all 0.15s;line-height:1.4}
+.arc-btn.primary{background:#d97706;color:#fff;border-color:#d97706}
+.arc-btn.primary:hover{background:#b45309}
+.arc-btn.secondary{background:#fff;color:#475569;border-color:#e2e8f0}
+.arc-btn.secondary:hover{border-color:#d97706;color:#92400e}
+.agent-input-wrap{padding:10px 12px;border-top:1px solid #f1f5f9;display:flex;gap:7px;align-items:center;flex-shrink:0}
+.agent-input{flex:1;border:1.5px solid #e2e8f0;border-radius:9px;padding:8px 11px;font-size:12px;font-family:inherit;outline:none;background:#f8fafc;color:#0d121b;transition:border-color 0.15s}
+.agent-input:focus{border-color:#d97706;background:#fff}
+.agent-send{width:32px;height:32px;border-radius:9px;flex-shrink:0;background:#d97706;border:none;color:#fff;cursor:pointer;font-size:15px;display:flex;align-items:center;justify-content:center}
+.agent-send:hover{background:#b45309}
+.agent-footer{padding:5px 12px;text-align:center;font-size:9px;color:#c4b5a0;background:#fafaf9;border-top:1px solid #f1f5f9;flex-shrink:0;font-family:'JetBrains Mono',monospace}
+@media(max-width:480px){
+  #hive-agent-panel{right:0;left:0;width:100%;border-radius:20px 20px 0 0;bottom:0;max-height:65vh}
+  #hive-agent-btn{right:14px;bottom:14px;width:48px;height:48px;font-size:20px}
+  #btt{right:72px;bottom:14px;width:40px;height:40px;font-size:18px}
+  #rb{bottom:14px}
+}
+
+.partner-card-wrap{max-width:1100px;margin:0 auto;padding:0 32px}
+.pcard{background:#fff;border:1px solid #e2e8f0;border-radius:20px;
+  padding:40px;margin-bottom:24px;
+  box-shadow:0 1px 3px rgba(15,23,42,0.06);
+  transition:box-shadow 0.2s,transform 0.2s;
+  display:grid;grid-template-columns:80px 1fr;gap:28px;align-items:start}
+.pcard:hover{box-shadow:0 8px 32px rgba(15,23,42,0.1);transform:translateY(-2px)}
+.pcard-icon{width:80px;height:80px;border-radius:18px;
+  display:flex;align-items:center;justify-content:center;font-size:36px;
+  flex-shrink:0}
+.pcard-body{}
+.pcard-top{display:flex;align-items:flex-start;gap:12px;margin-bottom:14px;flex-wrap:wrap}
+.pcard-name{font-size:22px;font-weight:900;color:#0d121b}
+.pcard-cat{font-size:10px;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;
+  padding:3px 10px;border-radius:100px;margin-top:4px;white-space:nowrap}
+.pcard-region{font-size:12px;color:#9aa1ad;font-weight:600;margin-top:6px;margin-bottom:10px}
+.pcard-desc{font-size:15px;color:#475569;line-height:1.75;margin-bottom:18px}
+.pcard-features{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px}
+.pcard-feat{font-size:12px;font-weight:600;padding:5px 12px;border-radius:8px}
+.pcard-links{display:flex;gap:12px;flex-wrap:wrap}
+.pcard-link{display:inline-flex;align-items:center;gap:6px;
+  font-size:13px;font-weight:700;padding:9px 18px;border-radius:10px;
+  text-decoration:none;transition:all 0.2s}
+.pcard-link.primary{color:#fff}
+.pcard-link.primary:hover{transform:translateY(-2px);box-shadow:0 4px 12px rgba(0,0,0,0.2)}
+.pcard-link.secondary{background:#f8fafc;border:1.5px solid #e2e8f0;color:#475569}
+.pcard-link.secondary:hover{border-color:#d97706;color:#92400e}
+
+/* GROUP HEADERS */
+.group-label{max-width:1100px;margin:48px auto 16px;padding:0 32px;
+  display:flex;align-items:center;gap:14px}
+.group-label-line{flex:1;height:1px;background:#e2e8f0}
+.group-label-text{font-size:11px;font-weight:800;letter-spacing:0.14em;
+  text-transform:uppercase;color:#9aa1ad;white-space:nowrap}
+
+/* STATS FOOTER */
+.stats-footer{background:#0d121b;padding:60px 32px;margin-top:0}
+.stats-inner{max-width:900px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr);gap:32px;text-align:center}
+.stat-val{font-size:36px;font-weight:900;color:#f59e0b;font-family:'JetBrains Mono',monospace;margin-bottom:6px}
+.stat-lbl{font-size:12px;color:rgba(255,255,255,0.4)}
+
+/* MODAL */
+.mbd{position:fixed;inset:0;z-index:200;background:rgba(15,23,42,0.55);
+  backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;
+  padding:20px;opacity:0;pointer-events:none;transition:opacity 0.22s}
+.mbd.op{opacity:1;pointer-events:auto}
+.mdl{background:#fff;border:1px solid #e2e8f0;border-radius:22px;width:100%;max-width:440px;
+  box-shadow:0 24px 60px rgba(15,23,42,0.18);
+  transform:scale(0.9) translateY(16px);
+  transition:transform 0.32s cubic-bezier(0.34,1.56,0.64,1);overflow:hidden}
+.mbd.op .mdl{transform:scale(1) translateY(0)}
+.mhd{padding:22px 22px 16px;border-bottom:1px solid #f1f5f9;display:flex;align-items:flex-start;gap:13px}
+.mic{font-size:40px;line-height:1;flex-shrink:0}
+.mht{flex:1}
+.mtl{font-size:18px;font-weight:900;color:#0d121b;margin-bottom:5px;line-height:1.2}
+.mct{font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;padding:3px 10px;border-radius:100px;display:inline-block}
+.mx{width:28px;height:28px;border-radius:50%;background:#f1f5f9;border:none;
+  color:#626a75;cursor:pointer;font-size:13px;display:flex;align-items:center;
+  justify-content:center;flex-shrink:0;margin-left:auto;transition:background 0.15s}
+.mx:hover{background:#e2e8f0}
+.mby{padding:16px 22px 22px}
+.mds{font-size:13px;color:#475569;line-height:1.7;margin-bottom:13px}
+.mpl{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:17px}
+.mpi{font-size:10px;font-weight:600;padding:3px 10px;border-radius:100px}
+.mbn{display:block;width:100%;padding:12px;border-radius:11px;font-size:14px;
+  font-weight:800;text-align:center;border:none;cursor:pointer;font-family:inherit;
+  color:#fff;transition:transform 0.2s,box-shadow 0.2s}
+.mbn:hover{transform:translateY(-2px)}
+.mbn.cs{background:#e2e8f0;color:#9aa1ad;cursor:default}
+.mbn.cs:hover{transform:none}
+.m-scroll-btn{display:block;width:100%;padding:10px;border-radius:11px;font-size:13px;
+  font-weight:700;text-align:center;border:1.5px solid #e2e8f0;cursor:pointer;
+  font-family:inherit;color:#475569;background:#fff;margin-top:8px;transition:all 0.2s}
+.m-scroll-btn:hover{border-color:#d97706;color:#92400e}
+
+
+/* ── CONTACT SECTION ── */
+#contact{background:#fff;padding:80px 0 100px;border-top:1px solid #e2e8f0}
+.contact-inner{max-width:1100px;margin:0 auto;padding:0 32px}
+.contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:64px;margin-top:48px;align-items:start}
+.contact-form{display:flex;flex-direction:column;gap:16px}
+.form-row-2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.cf-label{font-size:13px;font-weight:600;color:#0d121b;display:block;margin-bottom:6px}
+.cf-input{width:100%;padding:11px 14px;border-radius:9px;border:1.5px solid #e2e8f0;
+  background:#f8fafc;font-size:14px;color:#0d121b;font-family:inherit;
+  transition:border-color 0.15s;outline:none}
+.cf-input:focus{border-color:#d97706;background:#fff}
+.cf-textarea{width:100%;padding:11px 14px;border-radius:9px;border:1.5px solid #e2e8f0;
+  background:#f8fafc;font-size:14px;color:#0d121b;font-family:inherit;
+  transition:border-color 0.15s;outline:none;resize:vertical;min-height:110px}
+.cf-textarea:focus{border-color:#d97706;background:#fff}
+.cf-select{width:100%;padding:11px 14px;border-radius:9px;border:1.5px solid #e2e8f0;
+  background:#f8fafc;font-size:14px;color:#0d121b;font-family:inherit;
+  transition:border-color 0.15s;outline:none;cursor:pointer}
+.cf-select:focus{border-color:#d97706;background:#fff}
+.cf-submit{background:#d97706;color:#fff;border:none;padding:14px 24px;border-radius:10px;
+  font-size:15px;font-weight:800;cursor:pointer;font-family:inherit;
+  transition:all 0.2s;box-shadow:0 4px 16px rgba(217,119,6,0.28)}
+.cf-submit:hover{background:#b45309;transform:translateY(-1px)}
+.cf-error{display:none;background:rgba(220,38,38,0.06);border:1px solid rgba(220,38,38,0.22);
+  border-radius:9px;padding:12px 16px;font-size:13px;color:#dc2626}
+.cf-note{font-size:11px;color:#9aa1ad;text-align:center;margin-top:4px}
+.cf-note a{color:#9aa1ad}
+.cf-success{display:none;background:rgba(16,174,101,0.06);border:1.5px solid rgba(16,174,101,0.3);
+  border-radius:16px;padding:40px;text-align:center}
+.cf-success-icon{font-size:48px;margin-bottom:16px}
+.cf-success h3{font-size:20px;font-weight:800;color:#0d121b;margin-bottom:8px}
+.cf-success p{font-size:14px;color:#626a75;margin-bottom:20px}
+.cf-success button{background:#d97706;color:#fff;border:none;padding:10px 24px;
+  border-radius:9px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit}
+.contact-info-panel h3{font-size:22px;font-weight:800;color:#0d121b;margin-bottom:12px}
+.contact-info-panel p{font-size:15px;color:#626a75;line-height:1.7;margin-bottom:24px}
+.contact-points-list{display:flex;flex-direction:column;gap:12px}
+.cp{display:flex;align-items:flex-start;gap:14px;background:#f8fafc;
+  border:1px solid #e2e8f0;border-radius:12px;padding:16px}
+.cp-ico{width:38px;height:38px;border-radius:9px;background:#fef3c7;
+  display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.cp-txt h4{font-size:13px;font-weight:700;color:#0d121b;margin-bottom:2px}
+.cp-txt p{font-size:12px;color:#626a75;line-height:1.5}
+.cp-txt a{color:#d97706;font-weight:600;text-decoration:none}
+
+/* ── BACK TO TOP ── */
+#btt{
+  position:fixed;bottom:28px;right:24px;z-index:200;
+  width:46px;height:46px;border-radius:50%;
+  background:#d97706;border:none;color:#fff;
+  font-size:20px;cursor:pointer;
+  box-shadow:0 4px 16px rgba(217,119,6,0.35);
+  display:none;align-items:center;justify-content:center;
+  transition:all 0.2s;font-family:inherit;
+}
+#btt.visible{display:flex}
+#btt:hover{background:#b45309;transform:translateY(-2px);box-shadow:0 8px 24px rgba(217,119,6,0.45)}
+
+@media(max-width:768px){
+  #hsv{width:180px !important;height:206px !important}
+  .hxc{width:82px;height:94px}
+  .hico{font-size:15px}
+  .hnm{font-size:7px}
+  .hsb{font-size:6px}
+  .bsv{width:44px !important;height:44px !important}
+  .bnt{font-size:8px;padding:2px 7px}
+}
+@media(max-width:640px){
+  .contact-grid{grid-template-columns:1fr;gap:40px}
+  .form-row-2{grid-template-columns:1fr}
+}
+
+/* ── BACK TO TOP ── */
+#btt{
+  position:fixed;bottom:28px;right:24px;z-index:200;
+  width:46px;height:46px;border-radius:50%;
+  background:#d97706;border:none;color:#fff;
+  font-size:20px;cursor:pointer;
+  box-shadow:0 4px 16px rgba(217,119,6,0.35);
+  display:none;align-items:center;justify-content:center;
+  transition:all 0.2s;font-family:inherit;
+}
+#btt.visible{display:flex}
+#btt:hover{background:#b45309;transform:translateY(-2px);box-shadow:0 8px 24px rgba(217,119,6,0.45)}
+
+@media(max-width:768px){
+  #hsv{width:180px !important;height:206px !important}
+  .hxc{width:82px;height:94px}
+  .hico{font-size:15px}
+  .hnm{font-size:7px}
+  .hsb{font-size:6px}
+  .bsv{width:44px !important;height:44px !important}
+  .bnt{font-size:8px;padding:2px 7px}
+}
+@media(max-width:640px){
+  .pcard{grid-template-columns:1fr;gap:16px}
+  .pcard-icon{width:60px;height:60px;font-size:28px;border-radius:14px}
+  .hdr-links{display:none}
+  .stats-inner{grid-template-columns:1fr 1fr;gap:24px}
+}
+
+/* -- HIVE AGENT WIDGET -- */
+#hive-agent-btn{
+  position:fixed;bottom:28px;right:80px;z-index:300;
+  width:54px;height:54px;border-radius:50%;
+  background:linear-gradient(135deg,#d97706,#f59e0b);
+  border:none;cursor:pointer;
+  box-shadow:0 4px 20px rgba(217,119,6,0.4);
+  display:flex;align-items:center;justify-content:center;
+  font-size:24px;transition:all 0.25s;
+}
+#hive-agent-btn:hover{transform:scale(1.1)}
+#hive-agent-badge{
+  position:absolute;top:-3px;right:-3px;
+  width:16px;height:16px;border-radius:50%;
+  background:#10ae65;border:2px solid #fff;
+}
+#hive-agent-panel{
+  position:fixed;bottom:94px;right:16px;z-index:300;
+  width:min(320px, calc(100vw - 24px));
+  background:#fff;border:1px solid #e2e8f0;
+  border-radius:20px;
+  box-shadow:0 16px 48px rgba(15,23,42,0.18);
+  display:none;flex-direction:column;
+  overflow:hidden;
+  font-family:'Inter',sans-serif;
+  max-height:80vh;
+}
+#hive-agent-panel.open{display:flex}
+.agent-header{
+  background:linear-gradient(135deg,#d97706,#f59e0b);
+  padding:14px 16px;
+  display:flex;align-items:center;gap:10px;
+  flex-shrink:0;
+}
+.agent-header-icon{font-size:22px;line-height:1;flex-shrink:0}
+.agent-header-title{font-size:14px;font-weight:800;color:#fff;line-height:1.2;display:block}
+.agent-header-sub{font-size:11px;color:rgba(255,255,255,0.75);display:block;margin-top:1px}
+.agent-close{margin-left:auto;background:rgba(255,255,255,0.2);border:none;
+  color:#fff;width:28px;height:28px;border-radius:50%;cursor:pointer;
+  font-size:14px;display:flex;align-items:center;justify-content:center;font-family:inherit}
+.agent-close:hover{background:rgba(255,255,255,0.35)}
+.agent-messages{
+  padding:14px;display:flex;flex-direction:column;gap:10px;
+  max-height:220px;overflow-y:auto;flex-shrink:0;
+}
+.agent-msg{font-size:13px;line-height:1.55;padding:10px 13px;border-radius:12px;max-width:92%}
+.agent-msg.bot{background:#f8fafc;border:1px solid #e2e8f0;color:#0d121b;
+  align-self:flex-start;border-radius:4px 12px 12px 12px}
+.agent-msg.user{background:#d97706;color:#fff;
+  align-self:flex-end;border-radius:12px 4px 12px 12px}
+.agent-results{padding:0 14px 10px;display:flex;flex-direction:column;gap:8px}
+.agent-result-card{
+  background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:12px;
+}
+.arc-top{display:flex;align-items:flex-start;gap:8px;margin-bottom:8px}
+.arc-icon{font-size:20px;flex-shrink:0;line-height:1}
+.arc-name{font-size:13px;font-weight:800;color:#0d121b}
+.arc-why{font-size:11px;color:#626a75;margin-top:2px;line-height:1.4}
+.arc-btns{display:flex;gap:6px;flex-wrap:wrap}
+.arc-btn{font-size:11px;font-weight:700;padding:5px 11px;border-radius:7px;
+  border:1px solid transparent;cursor:pointer;text-decoration:none;
+  display:inline-block;font-family:inherit;transition:all 0.15s;line-height:1.4}
+.arc-btn.primary{background:#d97706;color:#fff;border-color:#d97706}
+.arc-btn.primary:hover{background:#b45309;border-color:#b45309}
+.arc-btn.secondary{background:#fff;color:#475569;border-color:#e2e8f0}
+.arc-btn.secondary:hover{border-color:#d97706;color:#92400e}
+.agent-input-wrap{
+  padding:10px 12px;border-top:1px solid #f1f5f9;
+  display:flex;gap:8px;align-items:center;flex-shrink:0;
+}
+.agent-input{
+  flex:1;border:1.5px solid #e2e8f0;border-radius:10px;
+  padding:9px 12px;font-size:13px;font-family:inherit;
+  outline:none;background:#f8fafc;color:#0d121b;
+  transition:border-color 0.15s;
+}
+.agent-input:focus{border-color:#d97706;background:#fff}
+.agent-send{
+  width:34px;height:34px;border-radius:9px;flex-shrink:0;
+  background:#d97706;border:none;color:#fff;
+  cursor:pointer;font-size:16px;
+  display:flex;align-items:center;justify-content:center;
+  transition:background 0.15s;
+}
+.agent-send:hover{background:#b45309}
+.agent-footer{
+  padding:6px 12px;text-align:center;
+  font-size:10px;color:#c4b5a0;background:#fafaf9;
+  border-top:1px solid #f1f5f9;flex-shrink:0;
+  font-family:'JetBrains Mono',monospace;
+}
+
+
+@media(max-width:600px){
+  #hive-agent-panel{
+    right:0;left:0;bottom:0;
+    width:100%;
+    border-radius:20px 20px 0 0;
+    max-height:70vh;
+  }
+  #hive-agent-btn{
+    right:16px;
+    bottom:16px;
+  }
+}
+
+
+/* STATS */
+.stats-footer{background:#0d121b;padding:48px 32px}
+.stats-inner{max-width:900px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr);gap:32px;text-align:center}
+.stat-val{font-size:34px;font-weight:900;color:#f59e0b;font-family:'JetBrains Mono',monospace;margin-bottom:6px}
+.stat-lbl{font-size:12px;color:rgba(255,255,255,0.4)}
+@media(max-width:640px){.stats-inner{grid-template-columns:1fr 1fr;gap:24px}}
+</style>
+</head>
+<body>
+
+<nav class="hdr">
+  <a href="#hive-section" class="hdr-logo">&#x1F41D; Hive<span>Wise</span></a>
+  <div class="hdr-links">
+    <a href="#core-products" class="hdr-link">Products</a>
+    <a href="#strategic-partners" class="hdr-link">Strategic</a>
+    <a href="#regional-partners" class="hdr-link">Regional</a>
+    <a href="#contact" class="hdr-link">Contact</a>
+  </div>
+  <a href="#contact" class="hdr-cta">Request Demo</a>
+</nav>
+
+<section id="hive-section">
+  <div class="bghex"></div><div class="bg-glow"></div>
+  <div id="cv">
+    <div id="hw" onclick="openHive()">
+      <div class="pr"></div><div class="pr"></div><div class="pr"></div>
+      <svg id="hsv" viewBox="0 0 280 320" xmlns="http://www.w3.org/2000/svg" style="display:block;filter:drop-shadow(0 8px 28px rgba(180,90,0,0.2));transition:filter 0.3s">
+        <defs>
+          <linearGradient id="hb" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#fde68a"/><stop offset="45%" stop-color="#f59e0b"/><stop offset="100%" stop-color="#92400e"/></linearGradient>
+          <linearGradient id="rf" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stop-color="#fde68a"/><stop offset="100%" stop-color="#b45309"/></linearGradient>
+          <linearGradient id="pl" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#78350f"/><stop offset="100%" stop-color="#b45309"/></linearGradient>
+          <filter id="gs"><feDropShadow dx="0" dy="6" stdDeviation="9" flood-color="rgba(180,90,0,0.28)"/></filter>
+          <pattern id="hp" x="0" y="0" width="24" height="42" patternUnits="userSpaceOnUse">
+            <polygon points="12,1 23,7 23,21 12,27 1,21 1,7" fill="none" stroke="rgba(120,53,15,0.22)" stroke-width="0.9"/>
+            <polygon points="12,22 23,28 23,42 12,48 1,42 1,28" fill="none" stroke="rgba(120,53,15,0.22)" stroke-width="0.9"/>
+          </pattern>
+        </defs>
+        <rect x="126" y="218" width="28" height="98" rx="7" fill="url(#pl)"/>
+        <rect x="90" y="212" width="100" height="13" rx="5" fill="#78350f"/>
+        <ellipse cx="140" cy="160" rx="106" ry="124" fill="rgba(120,50,0,0.12)"/>
+        <ellipse cx="140" cy="158" rx="102" ry="120" fill="url(#hb)" filter="url(#gs)"/>
+        <ellipse cx="140" cy="158" rx="102" ry="120" fill="url(#hp)" opacity="0.5"/>
+        <ellipse cx="140" cy="158" rx="102" ry="120" fill="rgba(255,255,255,0.04)"/>
+        <ellipse cx="140" cy="82" rx="70" ry="9" fill="rgba(100,40,0,0.28)"/>
+        <ellipse cx="140" cy="110" rx="90" ry="9" fill="rgba(100,40,0,0.24)"/>
+        <ellipse cx="140" cy="142" rx="102" ry="9" fill="rgba(100,40,0,0.22)"/>
+        <ellipse cx="140" cy="175" rx="100" ry="8" fill="rgba(100,40,0,0.18)"/>
+        <ellipse cx="95" cy="136" rx="32" ry="78" fill="rgba(255,255,255,0.08)" transform="rotate(-15,95,136)"/>
+        <ellipse cx="140" cy="210" rx="26" ry="11" fill="#451a03"/>
+        <rect x="116" y="215" width="48" height="6" rx="3" fill="#78350f"/>
+        <path d="M74 198 Q71 210 73 220" stroke="#fbbf24" stroke-width="2.5" fill="none" stroke-linecap="round" opacity="0.5"/>
+        <ellipse cx="140" cy="50" rx="78" ry="54" fill="url(#rf)" filter="url(#gs)"/>
+        <ellipse cx="140" cy="50" rx="78" ry="54" fill="url(#hp)" opacity="0.35"/>
+        <ellipse cx="140" cy="26" rx="48" ry="8" fill="rgba(100,40,0,0.25)"/>
+        <ellipse cx="140" cy="52" rx="76" ry="8" fill="rgba(100,40,0,0.2)"/>
+        <ellipse cx="116" cy="32" rx="22" ry="16" fill="rgba(255,255,255,0.1)" transform="rotate(-12,116,32)"/>
+        <circle cx="140" cy="4" r="7" fill="#f59e0b"/>
+        <text x="140" y="156" text-anchor="middle" font-family="Inter,sans-serif" font-weight="900" font-size="22" fill="rgba(255,255,255,0.92)" letter-spacing="3">HIVE</text>
+        <text x="140" y="174" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="8" fill="rgba(255,255,255,0.48)" letter-spacing="2">AGENTIC AI</text>
+      </svg>
+      <div id="hint"><div class="hd"></div>Click the hive to reveal the ecosystem</div>
+    </div>
+  </div>
+</section>
+
+<section id="partners-section">
+  <div class="section-header">
+    <div class="section-eyebrow">&#x1F41D; The Full Ecosystem</div>
+    <h2 class="section-h2">Built on Trust. Driven by Partnership.</h2>
+    <p class="section-sub">Every partner and product in the HiveWise ecosystem — click any section to learn more or visit their platform.</p>
+  </div>
+
+  <!-- CORE PRODUCTS -->
+  <div class="group-label" id="core-products">
+    <div class="group-label-line"></div>
+    <div class="group-label-text">&#x2B22; Hive Core Products</div>
+    <div class="group-label-line"></div>
+  </div>
+  <div class="partner-card-wrap">
+
+    <div class="pcard" id="section-mfg">
+      <div class="pcard-icon" style="background:#fef3c7">&#x1F3ED;</div>
+      <div class="pcard-body">
+        <div class="pcard-top">
+          <div class="pcard-name">Hive Wise Manufacturing</div>
+          <span class="pcard-cat" style="background:#fef3c7;color:#92400e">Core Product</span>
+        </div>
+        <div class="pcard-region">Industrial AI &amp; Smart Factory Operations &nbsp;&#xB7;&nbsp; Includes EQMS / IT-OT</div>
+        <div class="pcard-desc">The AI operating system for the physical factory. PAIOS sits over your entire factory network ingesting live MQTT telemetry, reasoning over an Enterprise Knowledge Graph of 500+ nodes, and letting operators monitor, diagnose, and resolve faults in seconds. EQMS bridges IT and OT — collecting real-time data from every machine into quality and compliance workflows. Mean time to repair drops from 7.8 hours to 0.44 hours.</div>
+        <div class="pcard-features">
+          <span class="pcard-feat" style="background:#fef3c7;color:#92400e">Industrial Automation</span>
+          <span class="pcard-feat" style="background:#fef3c7;color:#92400e">Predictive Maintenance</span>
+          <span class="pcard-feat" style="background:#fef3c7;color:#92400e">IT/OT Convergence</span>
+          <span class="pcard-feat" style="background:#fef3c7;color:#92400e">94% Downtime Reduction</span>
+          <span class="pcard-feat" style="background:#fef3c7;color:#92400e">Enterprise Knowledge Graph</span>
+        </div>
+        <div class="pcard-links">
+          <a href="paios.html" target="_blank" class="pcard-link primary" style="background:#d97706">Open PAIOS Platform &#x2192;</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="pcard" id="section-scade">
+      <div class="pcard-icon" style="background:#ede9fe">&#x1F4A5;</div>
+      <div class="pcard-body">
+        <div class="pcard-top">
+          <div class="pcard-name">Hive Wise Supply Chain — SCADE</div>
+          <span class="pcard-cat" style="background:#ede9fe;color:#7c3aed">Core Product</span>
+        </div>
+        <div class="pcard-region">Supply Chain Anomaly Detection Engine &nbsp;&#xB7;&nbsp; Built into PAIOS</div>
+        <div class="pcard-desc">A patentable bidirectional causal blast radius engine. The moment a disruption is detected — whether a delayed shipment, a supplier failure, or a factory fault — SCADE traces the full causal impact forward and backward through your supply chain graph. It surfaces live substitute suppliers and routes, then ranks every mitigation option on a Pareto frontier of cost, speed, and risk. From detection to ranked decision in under 2 minutes. The War Room AI workspace lets managers talk through crises and get structured, grounded mitigation cards — not hallucinated summaries.</div>
+        <div class="pcard-features">
+          <span class="pcard-feat" style="background:#ede9fe;color:#7c3aed">Blast Radius Engine</span>
+          <span class="pcard-feat" style="background:#ede9fe;color:#7c3aed">Pareto Mitigation</span>
+          <span class="pcard-feat" style="background:#ede9fe;color:#7c3aed">Live Substitutability</span>
+          <span class="pcard-feat" style="background:#ede9fe;color:#7c3aed">Sub-2min Decisions</span>
+          <span class="pcard-feat" style="background:#ede9fe;color:#7c3aed">War Room AI</span>
+          <span class="pcard-feat" style="background:#ede9fe;color:#7c3aed">AIS &amp; Telematics</span>
+        </div>
+        <div class="pcard-links">
+          <a href="paios.html" target="_blank" class="pcard-link primary" style="background:#7c3aed">Open PAIOS + SCADE &#x2192;</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="pcard" id="section-wisdom">
+      <div class="pcard-icon" style="background:#fef3c7">&#x1F9E0;</div>
+      <div class="pcard-body">
+        <div class="pcard-top">
+          <div class="pcard-name">Hive Wisdom / Knowledge Management</div>
+          <span class="pcard-cat" style="background:#fef3c7;color:#92400e">Core Product</span>
+        </div>
+        <div class="pcard-region">Institutional AI &nbsp;&#xB7;&nbsp; Semantic Search &amp; Knowledge Graphs</div>
+        <div class="pcard-desc">Centralized institutional knowledge base powered by AI. Captures expertise from documents, workflows, and human judgment — storing it in semantic knowledge graphs that can be retrieved instantly. No expertise is ever lost when people move on. Enterprise data ingestion, GraphRAG retrieval, and knowledge graph visualization built in.</div>
+        <div class="pcard-features">
+          <span class="pcard-feat" style="background:#fef3c7;color:#92400e">Semantic Search</span>
+          <span class="pcard-feat" style="background:#fef3c7;color:#92400e">Knowledge Graphs</span>
+          <span class="pcard-feat" style="background:#fef3c7;color:#92400e">GraphRAG</span>
+          <span class="pcard-feat" style="background:#fef3c7;color:#92400e">Enterprise Data Ingestion</span>
+        </div>
+        <div class="pcard-links">
+          <span class="pcard-link secondary">Coming Soon</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="pcard" id="section-agents">
+      <div class="pcard-icon" style="background:#fef3c7">&#x1F6D2;</div>
+      <div class="pcard-body">
+        <div class="pcard-top">
+          <div class="pcard-name">Go-To Hive Agent Store</div>
+          <span class="pcard-cat" style="background:#fef3c7;color:#92400e">Core Product</span>
+        </div>
+        <div class="pcard-region">AI Agent Marketplace &amp; Distribution</div>
+        <div class="pcard-desc">A marketplace for discovering, deploying, and managing specialist AI agents across the HiveWise ecosystem. Modular AI workflows let enterprises build custom agentic pipelines without writing code. Each agent is purpose-built — KG Builder, Fault Diagnosis, Repair Procedure, EKG Modeling, and more — orchestrated automatically by the Reasoning Engine.</div>
+        <div class="pcard-features">
+          <span class="pcard-feat" style="background:#fef3c7;color:#92400e">Agent Marketplace</span>
+          <span class="pcard-feat" style="background:#fef3c7;color:#92400e">Modular AI Workflows</span>
+          <span class="pcard-feat" style="background:#fef3c7;color:#92400e">Ecosystem Growth</span>
+          <span class="pcard-feat" style="background:#fef3c7;color:#92400e">No-code Pipelines</span>
+        </div>
+        <div class="pcard-links">
+          <span class="pcard-link secondary">Coming Soon</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="pcard" id="section-conn">
+      <div class="pcard-icon" style="background:#fef3c7">&#x1F50C;</div>
+      <div class="pcard-body">
+        <div class="pcard-top">
+          <div class="pcard-name">Hive Connectors Store</div>
+          <span class="pcard-cat" style="background:#fef3c7;color:#92400e">Core Product</span>
+        </div>
+        <div class="pcard-region">Pre-built Integrations &amp; API Management</div>
+        <div class="pcard-desc">A hub of pre-built integrations connecting the HiveWise ecosystem to any enterprise software. API management, interoperability layers, and low-code integration mean any system — ERP, CRM, CMMS, IoT — can talk to any other through the Hive. Native connectors for SAP, Oracle, SQL Server, MySQL, and Postgres.</div>
+        <div class="pcard-features">
+          <span class="pcard-feat" style="background:#fef3c7;color:#92400e">API Management</span>
+          <span class="pcard-feat" style="background:#fef3c7;color:#92400e">SAP &amp; Oracle</span>
+          <span class="pcard-feat" style="background:#fef3c7;color:#92400e">Low-code Integration</span>
+          <span class="pcard-feat" style="background:#fef3c7;color:#92400e">Interoperability</span>
+        </div>
+        <div class="pcard-links">
+          <span class="pcard-link secondary">Coming Soon</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="pcard" id="section-paios">
+      <div class="pcard-icon" style="background:#ecf2ff">&#x1F916;</div>
+      <div class="pcard-body">
+        <div class="pcard-top">
+          <div class="pcard-name">PAIOS — Physical Agentic AI OS</div>
+          <span class="pcard-cat" style="background:#ecf2ff;color:#4f6bff">Core Product</span>
+        </div>
+        <div class="pcard-region">Physical Agentic AI Operating System &nbsp;&#xB7;&nbsp; Cross-factory Intelligence</div>
+        <div class="pcard-desc">Next-generation agentic operating system orchestrating autonomous AI agents across your factory network. Agent orchestration, autonomous task execution, and resource allocation in one sovereign platform. Every problem solved at one factory becomes instantly available to every other factory in the network — the more factories connected, the smarter the entire system becomes.</div>
+        <div class="pcard-features">
+          <span class="pcard-feat" style="background:#ecf2ff;color:#4f6bff">Agent Orchestration</span>
+          <span class="pcard-feat" style="background:#ecf2ff;color:#4f6bff">Autonomous Execution</span>
+          <span class="pcard-feat" style="background:#ecf2ff;color:#4f6bff">Cross-factory AI</span>
+          <span class="pcard-feat" style="background:#ecf2ff;color:#4f6bff">Bring Your Own LLM</span>
+        </div>
+        <div class="pcard-links">
+          <a href="paios.html" target="_blank" class="pcard-link primary" style="background:#4f6bff">Open PAIOS Platform &#x2192;</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="pcard" id="section-wx1i">
+      <div class="pcard-icon" style="background:#dcfce7">&#x2601;</div>
+      <div class="pcard-body">
+        <div class="pcard-top">
+          <div class="pcard-name">WX1 Infrastructure</div>
+          <span class="pcard-cat" style="background:#dcfce7;color:#16a34a">Infrastructure</span>
+        </div>
+        <div class="pcard-region">Sovereign High-availability Hosting &nbsp;&#xB7;&nbsp; Optional</div>
+        <div class="pcard-desc">Foundational high-performance physical and cloud infrastructure optimized for the HiveWise software stack. High-availability hosting, scalable compute, and hybrid-cloud compatibility — with full GDPR compliance and data sovereignty. Every Hive deployment can run on WX1 infrastructure for maximum security and performance.</div>
+        <div class="pcard-features">
+          <span class="pcard-feat" style="background:#dcfce7;color:#16a34a">Sovereign Cloud</span>
+          <span class="pcard-feat" style="background:#dcfce7;color:#16a34a">High Availability</span>
+          <span class="pcard-feat" style="background:#dcfce7;color:#16a34a">GDPR Compliant</span>
+          <span class="pcard-feat" style="background:#dcfce7;color:#16a34a">Hybrid-cloud</span>
+        </div>
+        <div class="pcard-links">
+          <a href="https://wx1.de/en" target="_blank" class="pcard-link primary" style="background:#16a34a">Visit wx1.de &#x2192;</a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- STRATEGIC PARTNERS -->
+  <div class="group-label" id="strategic-partners">
+    <div class="group-label-line"></div>
+    <div class="group-label-text">&#x2B50; Strategic &amp; Specialized Partners</div>
+    <div class="group-label-line"></div>
+  </div>
+  <div class="partner-card-wrap">
+
+    <div class="pcard" id="section-friday">
+      <div class="pcard-icon" style="background:#ecf2ff">&#x1F916;</div>
+      <div class="pcard-body">
+        <div class="pcard-top">
+          <div class="pcard-name">Inspired One — Friday</div>
+          <span class="pcard-cat" style="background:#ecf2ff;color:#4f6bff">AI &amp; Agentic Coworkers</span>
+        </div>
+        <div class="pcard-region">inspiredone.ai/friday &nbsp;&#xB7;&nbsp; Conversational AI &amp; Task Automation</div>
+        <div class="pcard-desc">AI coworker platform amplifying human productivity via the Friday agent framework. Friday handles conversational AI workflows, task automation, and executive assistant functions so your team stays focused on decisions that matter. Integrates with the HiveWise ecosystem to provide agentic coworker capabilities across every product.</div>
+        <div class="pcard-features">
+          <span class="pcard-feat" style="background:#ecf2ff;color:#4f6bff">Conversational AI</span>
+          <span class="pcard-feat" style="background:#ecf2ff;color:#4f6bff">Task Automation</span>
+          <span class="pcard-feat" style="background:#ecf2ff;color:#4f6bff">Executive Agents</span>
+          <span class="pcard-feat" style="background:#ecf2ff;color:#4f6bff">Workflow Intelligence</span>
+        </div>
+        <div class="pcard-links">
+          <a href="https://inspiredone.ai/friday" target="_blank" class="pcard-link primary" style="background:#4f6bff">Visit inspiredone.ai/friday &#x2192;</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="pcard" id="section-iam">
+      <div class="pcard-icon" style="background:#ede9fe">&#x1F4BC;</div>
+      <div class="pcard-body">
+        <div class="pcard-top">
+          <div class="pcard-name">IAM Intelligence</div>
+          <span class="pcard-cat" style="background:#ede9fe;color:#7c3aed">AI Consulting</span>
+        </div>
+        <div class="pcard-region">iam-intelligence.com &nbsp;&#xB7;&nbsp; AI Readiness &amp; Algorithmic Strategy</div>
+        <div class="pcard-desc">Specialized AI advisory firm guiding enterprises through algorithmic adoption at scale. IAM Intelligence builds AI readiness roadmaps tailored to your industry, defines algorithmic strategy across your data estate, and ensures ethics and governance are embedded from day one — not bolted on after.</div>
+        <div class="pcard-features">
+          <span class="pcard-feat" style="background:#ede9fe;color:#7c3aed">AI Readiness</span>
+          <span class="pcard-feat" style="background:#ede9fe;color:#7c3aed">Algorithmic Strategy</span>
+          <span class="pcard-feat" style="background:#ede9fe;color:#7c3aed">Ethics &amp; Governance</span>
+        </div>
+        <div class="pcard-links">
+          <a href="https://iam-intelligence.com" target="_blank" class="pcard-link primary" style="background:#7c3aed">Visit iam-intelligence.com &#x2192;</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="pcard" id="section-macvaar">
+      <div class="pcard-icon" style="background:#dcfce7">&#x2764;</div>
+      <div class="pcard-body">
+        <div class="pcard-top">
+          <div class="pcard-name">Macvaar AI</div>
+          <span class="pcard-cat" style="background:#dcfce7;color:#16a34a">Health Care</span>
+        </div>
+        <div class="pcard-region">macvaarai.com &nbsp;&#xB7;&nbsp; Medical AI &amp; Health Analytics</div>
+        <div class="pcard-desc">Medical and health technology AI partner bringing physiological intelligence to the HiveWise ecosystem. Macvaar AI specializes in body health analytics, medical computer vision for diagnostics, and healthcare AI compliance — ensuring AI applications in health contexts meet the strictest regulatory standards.</div>
+        <div class="pcard-features">
+          <span class="pcard-feat" style="background:#dcfce7;color:#16a34a">Body Health Analytics</span>
+          <span class="pcard-feat" style="background:#dcfce7;color:#16a34a">Medical Computer Vision</span>
+          <span class="pcard-feat" style="background:#dcfce7;color:#16a34a">Healthcare AI Compliance</span>
+        </div>
+        <div class="pcard-links">
+          <a href="https://macvaarai.com" target="_blank" class="pcard-link primary" style="background:#16a34a">Visit macvaarai.com &#x2192;</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="pcard" id="section-oip">
+      <div class="pcard-icon" style="background:#fef3c7">&#x1F4C8;</div>
+      <div class="pcard-body">
+        <div class="pcard-top">
+          <div class="pcard-name">Open Innovation Partners</div>
+          <span class="pcard-cat" style="background:#fef3c7;color:#92400e">Business Transformation</span>
+        </div>
+        <div class="pcard-region">openinnovationpartners.com &nbsp;&#xB7;&nbsp; Lean Kaizen &amp; Operational Excellence</div>
+        <div class="pcard-desc">Continuous improvement consulting practice applying Lean Kaizen methodology to modern enterprise transformation. Open Innovation Partners helps organizations redesign how they operate — embedding innovation management, eliminating waste, and building operational excellence that compounds over time alongside the HiveWise AI stack.</div>
+        <div class="pcard-features">
+          <span class="pcard-feat" style="background:#fef3c7;color:#92400e">Lean Kaizen</span>
+          <span class="pcard-feat" style="background:#fef3c7;color:#92400e">Innovation Management</span>
+          <span class="pcard-feat" style="background:#fef3c7;color:#92400e">Operational Efficiency</span>
+        </div>
+        <div class="pcard-links">
+          <a href="http://openinnovationpartners.com" target="_blank" class="pcard-link primary" style="background:#d97706">Visit openinnovationpartners.com &#x2192;</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="pcard" id="section-taligens">
+      <div class="pcard-icon" style="background:#fee2e2">&#x1F91D;</div>
+      <div class="pcard-body">
+        <div class="pcard-top">
+          <div class="pcard-name">Taligens</div>
+          <span class="pcard-cat" style="background:#fee2e2;color:#dc2626">Business Transformation</span>
+        </div>
+        <div class="pcard-region">taligens.com &nbsp;&#xB7;&nbsp; Culture Alignment &amp; Change Management</div>
+        <div class="pcard-desc">Strategic consultancy focused on the human element of corporate evolution. Technology transformation succeeds or fails based on people — Taligens aligns corporate culture, manages organizational change, and builds the people strategy that makes AI adoption stick. The essential human complement to the HiveWise technology stack.</div>
+        <div class="pcard-features">
+          <span class="pcard-feat" style="background:#fee2e2;color:#dc2626">Corporate Culture</span>
+          <span class="pcard-feat" style="background:#fee2e2;color:#dc2626">Change Management</span>
+          <span class="pcard-feat" style="background:#fee2e2;color:#dc2626">Organizational Strategy</span>
+        </div>
+        <div class="pcard-links">
+          <a href="https://taligens.com" target="_blank" class="pcard-link primary" style="background:#dc2626">Visit taligens.com &#x2192;</a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- REGIONAL PARTNERS -->
+  <div class="group-label" id="regional-partners">
+    <div class="group-label-line"></div>
+    <div class="group-label-text">&#x1F30D; Regional Partners</div>
+    <div class="group-label-line"></div>
+  </div>
+  <div class="partner-card-wrap">
+
+    <div class="pcard" id="section-igebra">
+      <div class="pcard-icon" style="background:#dcfce7">&#x1F9D2;</div>
+      <div class="pcard-body">
+        <div class="pcard-top">
+          <div class="pcard-name">iGebra.ai</div>
+          <span class="pcard-cat" style="background:#dcfce7;color:#16a34a">Regional Partner</span>
+        </div>
+        <div class="pcard-region">&#x1F1FA;&#x1F1F8; USA / &#x1F1EE;&#x1F1F3; India &nbsp;&#xB7;&nbsp; igebra.ai &nbsp;&#xB7;&nbsp; EdTech AI</div>
+        <div class="pcard-desc">Kids AI Education platform making artificial intelligence genuinely accessible to the next generation of learners. iGebra.ai combines EdTech AI, IT consulting, and data science — building AI literacy across classrooms in the United States and India. The HiveWise partner for education and future workforce development.</div>
+        <div class="pcard-features">
+          <span class="pcard-feat" style="background:#dcfce7;color:#16a34a">EdTech AI</span>
+          <span class="pcard-feat" style="background:#dcfce7;color:#16a34a">Kids Education</span>
+          <span class="pcard-feat" style="background:#dcfce7;color:#16a34a">IT Consulting</span>
+          <span class="pcard-feat" style="background:#dcfce7;color:#16a34a">Data Science</span>
+        </div>
+        <div class="pcard-links">
+          <a href="https://www.igebra.ai" target="_blank" class="pcard-link primary" style="background:#16a34a">Visit igebra.ai &#x2192;</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="pcard" id="section-moon">
+      <div class="pcard-icon" style="background:#dbeafe">&#x1F4BB;</div>
+      <div class="pcard-body">
+        <div class="pcard-top">
+          <div class="pcard-name">Moon IT Solutions</div>
+          <span class="pcard-cat" style="background:#dbeafe;color:#1d4ed8">Regional Partner</span>
+        </div>
+        <div class="pcard-region">&#x1F1FA;&#x1F1F8; USA &nbsp;&#xB7;&nbsp; moonitsolutions.com &nbsp;&#xB7;&nbsp; Managed IT</div>
+        <div class="pcard-desc">Comprehensive IT services and consulting provider delivering managed IT, cloud solutions, and infrastructure security for enterprise deployments across the United States. Moon IT Solutions provides the operational backbone for HiveWise implementations — ensuring reliable, secure, and scalable infrastructure for every client.</div>
+        <div class="pcard-features">
+          <span class="pcard-feat" style="background:#dbeafe;color:#1d4ed8">Managed IT</span>
+          <span class="pcard-feat" style="background:#dbeafe;color:#1d4ed8">Cloud Solutions</span>
+          <span class="pcard-feat" style="background:#dbeafe;color:#1d4ed8">Infrastructure Security</span>
+        </div>
+        <div class="pcard-links">
+          <a href="https://moonitsolutions.com" target="_blank" class="pcard-link primary" style="background:#1d4ed8">Visit moonitsolutions.com &#x2192;</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="pcard" id="section-iscott">
+      <div class="pcard-icon" style="background:#fee2e2">&#x1F30F;</div>
+      <div class="pcard-body">
+        <div class="pcard-top">
+          <div class="pcard-name">iScottsberg</div>
+          <span class="pcard-cat" style="background:#fee2e2;color:#dc2626">Regional Partner</span>
+        </div>
+        <div class="pcard-region">&#x1F1F8;&#x1F1EC; Singapore &nbsp;&#xB7;&nbsp; iscottsberg.com &nbsp;&#xB7;&nbsp; APAC</div>
+        <div class="pcard-desc">Regional hub driving HiveWise expansion across Southeast Asia and the broader APAC market. iScottsberg brings deep market localization expertise, regulatory navigation across ASEAN economies, and strategic business growth connections that open doors across the region.</div>
+        <div class="pcard-features">
+          <span class="pcard-feat" style="background:#fee2e2;color:#dc2626">APAC Market</span>
+          <span class="pcard-feat" style="background:#fee2e2;color:#dc2626">Market Localization</span>
+          <span class="pcard-feat" style="background:#fee2e2;color:#dc2626">Strategic Growth</span>
+        </div>
+        <div class="pcard-links">
+          <a href="https://iscottsberg.com" target="_blank" class="pcard-link primary" style="background:#dc2626">Visit iscottsberg.com &#x2192;</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="pcard" id="section-wx1">
+      <div class="pcard-icon" style="background:#dcfce7">&#x1F3E2;</div>
+      <div class="pcard-body">
+        <div class="pcard-top">
+          <div class="pcard-name">WX1</div>
+          <span class="pcard-cat" style="background:#dcfce7;color:#16a34a">Regional Partner</span>
+        </div>
+        <div class="pcard-region">&#x1F1EA;&#x1F1FA; Europe / Germany &nbsp;&#xB7;&nbsp; wx1.de &nbsp;&#xB7;&nbsp; Sovereign Infrastructure</div>
+        <div class="pcard-desc">Sovereign cloud and critical infrastructure provider based in Germany. WX1 delivers data centres that meet the strictest European data privacy and GDPR standards — essential for sovereign AI deployments where data must never leave your jurisdiction. The trusted infrastructure backbone for HiveWise across the European market.</div>
+        <div class="pcard-features">
+          <span class="pcard-feat" style="background:#dcfce7;color:#16a34a">Sovereign Data Centres</span>
+          <span class="pcard-feat" style="background:#dcfce7;color:#16a34a">GDPR Compliance</span>
+          <span class="pcard-feat" style="background:#dcfce7;color:#16a34a">Secure Hosting</span>
+          <span class="pcard-feat" style="background:#dcfce7;color:#16a34a">Data Privacy</span>
+        </div>
+        <div class="pcard-links">
+          <a href="https://wx1.de/en" target="_blank" class="pcard-link primary" style="background:#16a34a">Visit wx1.de &#x2192;</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="pcard" id="section-aatek">
+      <div class="pcard-icon" style="background:#fef3c7">&#x1F9BE;</div>
+      <div class="pcard-body">
+        <div class="pcard-top">
+          <div class="pcard-name">Aatek</div>
+          <span class="pcard-cat" style="background:#fef3c7;color:#92400e">Regional Partner</span>
+        </div>
+        <div class="pcard-region">&#x1F1EA;&#x1F1FA; Europe &nbsp;&#xB7;&nbsp; aatek.de &nbsp;&#xB7;&nbsp; Industrial Automation</div>
+        <div class="pcard-desc">German industrial automation and intelligent robotics partner. Aatek connects physical machines, robotic systems, and industrial hardware directly to the HiveWise intelligence layer — bridging the gap between physical automation and AI-driven optimization. Physical AI integration and industrial engineering expertise for the most demanding factory environments.</div>
+        <div class="pcard-features">
+          <span class="pcard-feat" style="background:#fef3c7;color:#92400e">Robotic Automation</span>
+          <span class="pcard-feat" style="background:#fef3c7;color:#92400e">Physical AI Integration</span>
+          <span class="pcard-feat" style="background:#fef3c7;color:#92400e">Industrial Engineering</span>
+        </div>
+        <div class="pcard-links">
+          <a href="https://aatek.de" target="_blank" class="pcard-link primary" style="background:#d97706">Visit aatek.de &#x2192;</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="pcard" id="section-synth">
+      <div class="pcard-icon" style="background:#ede9fe">&#x2699;</div>
+      <div class="pcard-body">
+        <div class="pcard-top">
+          <div class="pcard-name">Synthesys</div>
+          <span class="pcard-cat" style="background:#ede9fe;color:#7c3aed">Regional Partner</span>
+        </div>
+        <div class="pcard-region">&#x1F1EE;&#x1F1F3; India &nbsp;&#xB7;&nbsp; synthesys.co.in &nbsp;&#xB7;&nbsp; Enterprise Software</div>
+        <div class="pcard-desc">Software solutions and business process engineering firm delivering enterprise application development and systems integration for HiveWise deployments across India. Synthesys handles the complex integration work that connects HiveWise products to existing enterprise systems, ensuring smooth adoption with minimal disruption.</div>
+        <div class="pcard-features">
+          <span class="pcard-feat" style="background:#ede9fe;color:#7c3aed">Enterprise Apps</span>
+          <span class="pcard-feat" style="background:#ede9fe;color:#7c3aed">Systems Integration</span>
+          <span class="pcard-feat" style="background:#ede9fe;color:#7c3aed">Business Process</span>
+        </div>
+        <div class="pcard-links">
+          <a href="http://www.synthesys.co.in" target="_blank" class="pcard-link primary" style="background:#7c3aed">Visit synthesys.co.in &#x2192;</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="pcard" id="section-brilliqs">
+      <div class="pcard-icon" style="background:#ffedd5">&#x1F4A1;</div>
+      <div class="pcard-body">
+        <div class="pcard-top">
+          <div class="pcard-name">Brilliqs</div>
+          <span class="pcard-cat" style="background:#ffedd5;color:#c2410c">Regional Partner</span>
+        </div>
+        <div class="pcard-region">&#x1F1EE;&#x1F1F3; India &nbsp;&#xB7;&nbsp; brilliqs.com &nbsp;&#xB7;&nbsp; Product Engineering</div>
+        <div class="pcard-desc">Digital transformation and technology consulting firm specializing in product engineering and full-stack development. Brilliqs builds the custom technology layers that make HiveWise work in every unique enterprise context — fast delivery, production-ready code, and deep technical capability across the full development lifecycle.</div>
+        <div class="pcard-features">
+          <span class="pcard-feat" style="background:#ffedd5;color:#c2410c">Product Engineering</span>
+          <span class="pcard-feat" style="background:#ffedd5;color:#c2410c">Full-stack Dev</span>
+          <span class="pcard-feat" style="background:#ffedd5;color:#c2410c">Digital Transformation</span>
+        </div>
+        <div class="pcard-links">
+          <a href="http://www.brilliqs.com" target="_blank" class="pcard-link primary" style="background:#c2410c">Visit brilliqs.com &#x2192;</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="pcard" id="section-testfold">
+      <div class="pcard-icon" style="background:#ecf2ff">&#x1F9EA;</div>
+      <div class="pcard-body">
+        <div class="pcard-top">
+          <div class="pcard-name">Testfold</div>
+          <span class="pcard-cat" style="background:#ecf2ff;color:#4f6bff">Regional Partner</span>
+        </div>
+        <div class="pcard-region">&#x1F1FA;&#x1F1F8; USA &nbsp;&#xB7;&nbsp; testfold.ai &nbsp;&#xB7;&nbsp; QA &amp; Software Testing</div>
+        <div class="pcard-desc">Strategic technology partner specializing in quality assurance and software testing — ensuring every HiveWise deployment meets enterprise-grade quality standards before it reaches production. Testfold brings rigorous QA methodology, automated testing frameworks, and deep technical expertise to validate every layer of the Hive stack.</div>
+        <div class="pcard-features">
+          <span class="pcard-feat" style="background:#ecf2ff;color:#4f6bff">Quality Assurance</span>
+          <span class="pcard-feat" style="background:#ecf2ff;color:#4f6bff">Software Testing</span>
+          <span class="pcard-feat" style="background:#ecf2ff;color:#4f6bff">Test Automation</span>
+        </div>
+        <div class="pcard-links">
+          <a href="https://testfold.ai" target="_blank" class="pcard-link primary" style="background:#4f6bff">Visit testfold.ai &#x2192;</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="pcard" id="section-aevolan">
+      <div class="pcard-icon" style="background:#ede9fe">&#x26A1;</div>
+      <div class="pcard-body">
+        <div class="pcard-top">
+          <div class="pcard-name">Aevolan</div>
+          <span class="pcard-cat" style="background:#ede9fe;color:#7c3aed">Regional Partner</span>
+        </div>
+        <div class="pcard-region">&#x1F1FA;&#x1F1F8; USA &nbsp;&#xB7;&nbsp; Solution Architecture</div>
+        <div class="pcard-desc">Advanced technology and systems integration partner handling solution architecture and enterprise deployment for HiveWise at scale. Aevolan translates complex technical requirements into elegant, scalable architectures — ensuring every enterprise Hive deployment is built right the first time and grows without friction.</div>
+        <div class="pcard-features">
+          <span class="pcard-feat" style="background:#ede9fe;color:#7c3aed">Solution Architecture</span>
+          <span class="pcard-feat" style="background:#ede9fe;color:#7c3aed">Enterprise Deployment</span>
+          <span class="pcard-feat" style="background:#ede9fe;color:#7c3aed">Systems Integration</span>
+        </div>
+        <div class="pcard-links">
+          <a href="https://www.aevolantech.com" target="_blank" class="pcard-link primary" style="background:#7c3aed">Visit aevolantech.com &#x2192;</a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+
+<!-- ── CONTACT ── -->
+<section id="contact">
+  <div class="contact-inner">
+    <div class="section-header" style="margin-bottom:0">
+      <div class="section-eyebrow">Get In Touch</div>
+      <h2 class="section-h2">Let's connect your ecosystem.</h2>
+      <p class="section-sub">Request a demo, ask about a partnership, or reach out about any product in the HiveWise ecosystem.</p>
+    </div>
+    <div class="contact-grid">
+
+      <!-- FORM -->
+      <div>
+        <div class="cf-success" id="cf-success">
+          <div class="cf-success-icon">&#10003;</div>
+          <h3>Message sent!</h3>
+          <p>Your email client opened with everything pre-filled. Just hit Send — we will be in touch within one business day.</p>
+          <button onclick="hwResetForm()">Send another message</button>
+        </div>
+        <div class="contact-form" id="cf-form-wrap">
+          <div class="form-row-2">
+            <div><label class="cf-label" for="hw-fname">First name *</label><input class="cf-input" type="text" id="hw-fname" placeholder="Jane"></div>
+            <div><label class="cf-label" for="hw-lname">Last name *</label><input class="cf-input" type="text" id="hw-lname" placeholder="Smith"></div>
+          </div>
+          <div><label class="cf-label" for="hw-email">Work email *</label><input class="cf-input" type="email" id="hw-email" placeholder="jane@company.com"></div>
+          <div><label class="cf-label" for="hw-company">Company</label><input class="cf-input" type="text" id="hw-company" placeholder="Acme Manufacturing Ltd."></div>
+          <div>
+            <label class="cf-label" for="hw-industry">Industry</label>
+            <select class="cf-select" id="hw-industry">
+              <option value="">Select your industry</option>
+              <option>Automotive</option>
+              <option>Aerospace and Aviation</option>
+              <option>Semiconductor</option>
+              <option>Oil and Gas</option>
+              <option>Rail and Locomotive</option>
+              <option>Pharmaceutical</option>
+              <option>Industrial / Other</option>
+            </select>
+          </div>
+          <div>
+            <label class="cf-label" for="hw-interest">I am interested in *</label>
+            <select class="cf-select" id="hw-interest">
+              <option value="">Select a product or partner</option>
+              <optgroup label="Core Products">
+                <option>PAIOS - Physical AI Operating System</option>
+                <option>SCADE - Supply Chain Blast Radius</option>
+                <option>Hive Wise Manufacturing</option>
+                <option>Hive Wisdom - Knowledge Management</option>
+                <option>Go-To Hive Agent Store</option>
+                <option>Hive Connectors Store</option>
+                <option>WX1 Infrastructure</option>
+              </optgroup>
+              <optgroup label="Strategic Partners">
+                <option>Friday - Inspired One (AI Coworker)</option>
+                <option>IAM Intelligence (AI Consulting)</option>
+                <option>Macvaar AI (Healthcare)</option>
+                <option>Open Innovation Partners (Transformation)</option>
+                <option>Taligens (Business Transformation)</option>
+              </optgroup>
+              <optgroup label="Regional Partners">
+                <option>Testfold (QA &amp; Testing)</option>
+                <option>Aevolan (Solution Architecture)</option>
+                <option>iGebra.ai (EdTech AI)</option>
+                <option>Moon IT Solutions</option>
+                <option>iScottsberg (Singapore / APAC)</option>
+                <option>WX1 (Europe / Infrastructure)</option>
+                <option>Aatek (Industrial Automation)</option>
+                <option>Synthesys (India)</option>
+                <option>Brilliqs (India)</option>
+              </optgroup>
+              <option>General Partnership Enquiry</option>
+              <option>Other</option>
+            </select>
+          </div>
+          <div><label class="cf-label" for="hw-message">What are you looking to solve? *</label><textarea class="cf-textarea" id="hw-message" placeholder="Describe your challenge or question..."></textarea></div>
+          <div class="cf-error" id="cf-error"></div>
+          <button class="cf-submit" onclick="hwSubmitForm()">Request a Demo</button>
+          <p class="cf-note">We respond within 1 business day &nbsp;&middot;&nbsp; <a href="mailto:hive.wise@outlook.com">hive.wise@outlook.com</a></p>
+        </div>
+      </div>
+
+      <!-- INFO -->
+      <div class="contact-info-panel">
+        <h3>We will connect you to the right part of the hive.</h3>
+        <p>Whether you want a live demo of PAIOS, want to explore a partnership, or need to talk to a specific team — fill in what you are interested in and we will route you correctly.</p>
+        <div class="contact-points-list">
+          <div class="cp">
+            <div class="cp-ico">&#128231;</div>
+            <div class="cp-txt">
+              <h4>Email us directly</h4>
+              <p><a href="mailto:hive.wise@outlook.com">hive.wise@outlook.com</a></p>
+            </div>
+          </div>
+          <div class="cp">
+            <div class="cp-ico">&#127981;</div>
+            <div class="cp-txt">
+              <h4>PAIOS &amp; SCADE Platform</h4>
+              <p>Live factory intelligence — deployed on your infrastructure, sovereign, no data leaves your plant. <a href="paios.html" target="_blank">Open PAIOS &rarr;</a></p>
+            </div>
+          </div>
+          <div class="cp">
+            <div class="cp-ico">&#x1F41D;</div>
+            <div class="cp-txt">
+              <h4>Partner with HiveWise</h4>
+              <p>We are actively expanding the ecosystem. If you have a product or capability that fits, reach out and let us discuss.</p>
+            </div>
+          </div>
+          <div class="cp">
+            <div class="cp-ico">&#9889;</div>
+            <div class="cp-txt">
+              <h4>Fast response</h4>
+              <p>Every enquiry is read by a human within one business day. No bots, no automated replies.</p>
+            </div>
+          </div>
+          <div class="cp">
+            <div class="cp-ico">&#x1F30D;</div>
+            <div class="cp-txt">
+              <h4>Global reach</h4>
+              <p>Partners across USA, Europe, Asia and the Middle East. We cover your region.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
+<div class="stats-footer">
+  <div class="stats-inner">
+    <div><div class="stat-val">14+</div><div class="stat-lbl">Global Partners</div></div>
+    <div><div class="stat-val">7</div><div class="stat-lbl">Core Products</div></div>
+    <div><div class="stat-val">40+</div><div class="stat-lbl">Nations Reached</div></div>
+    <div><div class="stat-val">94%</div><div class="stat-lbl">Downtime Reduction</div></div>
+  </div>
+</div>
+
+<div class="mbd" id="mbd" onclick="cMBd(event)">
+  <div class="mdl">
+    <div class="mhd"><div class="mic" id="mIc"></div><div class="mht"><div class="mtl" id="mTl"></div><div class="mct" id="mCt"></div></div><button class="mx" onclick="cM()">&#x2715;</button></div>
+    <div class="mby"><div class="mds" id="mDs"></div><div class="mpl" id="mPl"></div><button class="mbn" id="mBn" onclick="vM()"></button><button class="m-scroll-btn" id="mScr" onclick="scrollToSection()">See full details below &#x2193;</button></div>
+  </div>
+</div>
+
+<button id="rb" onclick="resetHive()">&#x21A9; Close the hive</button>
+<button id="btt" onclick="backToTop()" title="Back to top">&#x2191;</button>
+
+<button id="hive-agent-btn" onclick="toggleAgent()" title="Ask HiveWise">
+  <div id="hive-agent-badge"></div>&#x1F41D;
+</button>
+<div id="hive-agent-panel">
+  <div class="agent-header">
+    <div class="agent-header-icon">&#x1F41D;</div>
+    <div><span class="agent-header-title">HiveWise Assistant</span><span class="agent-header-sub">Tell me what you need</span></div>
+    <button class="agent-close" onclick="toggleAgent()">&#x2715;</button>
+  </div>
+  <div class="agent-messages" id="agent-msgs">
+    <div class="agent-msg bot">Hi! Describe what you are looking to do or the challenge you want to solve. I will connect you to the right part of the Hive.</div>
+  </div>
+  <div class="agent-results" id="agent-results"></div>
+  <div class="agent-input-wrap">
+    <input class="agent-input" id="agent-input" type="text" placeholder="e.g. I need deployment testing..." onkeydown="if(event.key==='Enter') agentSearch()">
+    <button class="agent-send" onclick="agentSearch()">&#x2192;</button>
+  </div>
+  <div class="agent-footer">Powered by HiveWise &#x1F41D;</div>
+</div>
+
+<script>
+var isOpen=false, CU=null, CURRENT_KEY=null, agentOpen=false;
+
+var CORE=[
+  {id:'mfg',    icon:'&#x1F3ED;', name:'Manufacturing',  sub:'Hive Wise + EQMS',
+   desc:'AI-driven smart factory operations with full IT/OT convergence via EQMS. Industrial automation, process optimization, predictive maintenance, and real-time data ingestion from every machine on the floor.',
+   pills:['Industrial AI','Predictive Maintenance','IT/OT Convergence','EQMS'],
+   cat:'Core Product',catC:'#f59e0b',catBg:'rgba(196,154,40,0.18)',url:'paios.html',btn:'Open PAIOS Platform'},
+
+  {id:'scade',  icon:'&#x1F4A5;', name:'Supply Chain',   sub:'Blast Radius',
+   desc:'Bidirectional causal blast radius engine mapping how a disruption ripples through your supply chain. Surfaces live substitutes and ranks Pareto-optimal mitigation options in under 2 minutes.',
+   pills:['Blast Radius','Pareto Mitigation','Risk Assessment','Resiliency'],
+   cat:'Core Product',catC:'#8b5cf6',catBg:'rgba(139,92,246,0.18)',url:'paios.html',btn:'Open PAIOS + SCADE'},
+
+  {id:'wisdom', icon:'&#x1F9E0;', name:'Hive Wisdom',    sub:'Knowledge Mgmt',
+   desc:'Centralized institutional knowledge base powered by AI. Semantic search, enterprise data ingestion, and knowledge graphs -- so no expertise is ever lost when people move on.',
+   pills:['Semantic Search','Knowledge Graphs','Enterprise AI'],
+   cat:'Core Product',catC:'#f59e0b',catBg:'rgba(196,154,40,0.18)',url:null,btn:'Coming Soon'},
+
+  {id:'agents', icon:'&#x1F6D2;', name:'Agent Store',    sub:'Go-To Hive',
+   desc:'Marketplace for discovering, deploying, and managing specialist AI agents. Modular AI workflows let enterprises build custom agentic pipelines without writing code.',
+   pills:['Agent Marketplace','Modular AI','Ecosystem Growth'],
+   cat:'Core Product',catC:'#f59e0b',catBg:'rgba(196,154,40,0.18)',url:null,btn:'Coming Soon'},
+
+  {id:'conn',   icon:'&#x1F50C;', name:'Connectors',     sub:'Hive Store',
+   desc:'Hub of pre-built integrations connecting Hive to any enterprise software. API management, interoperability, and low-code integration so every system talks to every other.',
+   pills:['API Management','Interoperability','Low-code'],
+   cat:'Core Product',catC:'#f59e0b',catBg:'rgba(196,154,40,0.18)',url:null,btn:'Coming Soon'},
+
+  {id:'fridayhex', icon:'&#x1F916;', name:'Friday',       sub:'Agentic Coworker',
+   desc:'Friday is your intelligent agentic coworker from Inspired One. Handles tasks, automates workflows, and works alongside your team so humans stay focused on decisions that matter.',
+   pills:['Agentic Coworker','Task Automation','Conversational AI','Executive Agents'],
+   cat:'AI & Agentic Coworkers',catC:'#4f6bff',catBg:'rgba(79,107,255,0.18)',url:'https://inspiredone.ai/friday',btn:'Visit inspiredone.ai/friday'},
+
+  {id:'wx1i',   icon:'&#x2601;&#xFE0F;', name:'WX1 Infra', sub:'Optional',
+   desc:'Sovereign high-availability infrastructure optimized for the Hive stack. Scalable compute, hybrid-cloud compatibility, and full GDPR-compliant sovereign hosting.',
+   pills:['Sovereign','High-availability','Hybrid-cloud'],
+   cat:'Infrastructure',catC:'#10ae65',catBg:'rgba(16,174,101,0.18)',url:'https://wx1.de/en',btn:'Visit wx1.de'},
+];
+var PARTNERS=[
+  /* Strategic & Specialized */
+  {id:'friday', icon:'&#x1F916;', name:'Inspired One',  region:'AI & Agentic',
+   desc:'AI coworker platform amplifying human productivity via the Friday agent framework. Conversational AI workflows, task automation, and executive assistant agents.',
+   pills:['Conversational AI','Task Automation','Executive Agents'],
+   cat:'AI & Agentic Coworkers',catC:'#4f6bff',catBg:'rgba(79,107,255,0.18)',url:'https://inspiredone.ai/friday',btn:'Visit inspiredone.ai/friday'},
+
+  {id:'iam',    icon:'&#x1F4BC;', name:'IAM Intelligence', region:'AI Consulting',
+   desc:'Specialized AI advisory firm guiding enterprises through algorithmic adoption -- AI readiness roadmaps, algorithmic strategy, ethics and governance.',
+   pills:['AI Readiness','Algorithmic Strategy','Ethics & Governance'],
+   cat:'AI Consulting',catC:'#8b5cf6',catBg:'rgba(139,92,246,0.18)',url:'https://iam-intelligence.com',btn:'Visit iam-intelligence.com'},
+
+  {id:'macvaar',icon:'&#x2764;&#xFE0F;', name:'Macvaar AI', region:'Health Care',
+   desc:'Medical and health tech AI partner. Body health analytics, medical computer vision, and healthcare AI compliance for the Hive ecosystem.',
+   pills:['Health Analytics','Medical Vision','AI Compliance'],
+   cat:'Health Care',catC:'#10ae65',catBg:'rgba(16,174,101,0.18)',url:'https://macvaarai.com',btn:'Visit macvaarai.com'},
+
+  {id:'oip',    icon:'&#x1F4C8;', name:'Open Innovation', region:'Transformation',
+   desc:'Continuous improvement consulting applying Lean Kaizen methodology, innovation management, and operational efficiency transformation.',
+   pills:['Lean Kaizen','Innovation Mgmt','Operational Excellence'],
+   cat:'Business Transformation',catC:'#f59e0b',catBg:'rgba(196,154,40,0.18)',url:'http://openinnovationpartners.com',btn:'Visit openinnovationpartners.com'},
+
+  {id:'taligens',icon:'&#x1F91D;', name:'Taligens',     region:'Transformation',
+   desc:'Strategic consultancy focused on the human element of corporate evolution -- corporate culture alignment, change management, and organizational strategy.',
+   pills:['Culture Alignment','Change Management','Org Strategy'],
+   cat:'Business Transformation',catC:'#ef4444',catBg:'rgba(239,68,68,0.18)',url:'https://taligens.com',btn:'Visit taligens.com'},
+
+  /* Regional */
+  {id:'testfold',icon:'&#x1F9EA;', name:'Testfold',     region:'USA',
+   desc:'Strategic technology partner specializing in quality assurance and software testing -- ensuring every Hive deployment meets enterprise-grade quality standards.',
+   pills:['Quality Assurance','Software Testing'],
+   cat:'Regional Partner -- USA',catC:'#4f6bff',catBg:'rgba(79,107,255,0.18)',url:'https://testfold.ai',btn:'Visit testfold.ai'},
+
+  {id:'aevolan', icon:'&#x26A1;',  name:'Aevolan',      region:'USA',
+   desc:'Advanced technology and systems integration partner handling solution architecture and enterprise deployment for Hive at scale.',
+   pills:['Solution Architecture','Enterprise Deployment'],
+   cat:'Regional Partner -- USA',catC:'#8b5cf6',catBg:'rgba(139,92,246,0.18)',url:'https://www.aevolantech.com',btn:'Visit aevolantech.com'},
+
+  {id:'igebra',  icon:'&#x1F9D2;', name:'iGebra.ai',   region:'USA / India',
+   desc:'Kids AI Education platform making artificial intelligence accessible to the next generation. EdTech AI, IT consulting, and data science across two continents.',
+   pills:['EdTech AI','Kids Education','IT Consulting','Data Science'],
+   cat:'Regional Partner -- USA / India',catC:'#10ae65',catBg:'rgba(16,174,101,0.18)',url:'https://www.igebra.ai',btn:'Visit igebra.ai'},
+
+  {id:'moon',    icon:'&#x1F4BB;', name:'Moon IT',      region:'USA',
+   desc:'Comprehensive IT services provider -- managed IT, cloud solutions, and infrastructure security for Hive deployments across the United States.',
+   pills:['Managed IT','Cloud Solutions','Infra Security'],
+   cat:'Regional Partner -- USA',catC:'#3b82f6',catBg:'rgba(59,130,246,0.18)',url:'https://moonitsolutions.com',btn:'Visit moonitsolutions.com'},
+
+  {id:'iscott',  icon:'&#x1F30F;', name:'iScottsberg',  region:'Singapore',
+   desc:'Regional hub driving Hive expansion across Southeast Asia. Deep APAC market localization and strategic business growth connections.',
+   pills:['APAC Market','Localization','Strategic Growth'],
+   cat:'Regional Partner -- Singapore',catC:'#ef4444',catBg:'rgba(239,68,68,0.18)',url:'https://iscottsberg.com',btn:'Visit iscottsberg.com'},
+
+  {id:'wx1',    icon:'&#x1F3E2;',  name:'WX1',          region:'Europe',
+   desc:'Sovereign cloud and critical infrastructure provider based in Germany. Strictest European data privacy and GDPR-compliant sovereign data centers.',
+   pills:['Sovereign Cloud','GDPR','Secure Hosting'],
+   cat:'Regional Partner -- Europe',catC:'#10ae65',catBg:'rgba(16,174,101,0.18)',url:'https://wx1.de/en',btn:'Visit wx1.de'},
+
+  {id:'aatek',   icon:'&#x1F9BE;', name:'Aatek',        region:'Europe',
+   desc:'German industrial automation and robotics partner connecting physical machines and robotic systems to the Hive intelligence layer.',
+   pills:['Robotic Automation','Physical AI','Industrial Engineering'],
+   cat:'Regional Partner -- Europe',catC:'#f59e0b',catBg:'rgba(196,154,40,0.18)',url:'https://aatek.de',btn:'Visit aatek.de'},
+
+  {id:'synth',   icon:'&#x2699;&#xFE0F;', name:'Synthesys', region:'India',
+   desc:'Software solutions and business process engineering firm -- enterprise application development and systems integration for Hive deployments in India.',
+   pills:['Enterprise Apps','Systems Integration'],
+   cat:'Regional Partner -- India',catC:'#8b5cf6',catBg:'rgba(139,92,246,0.18)',url:'http://www.synthesys.co.in',btn:'Visit synthesys.co.in'},
+
+  {id:'brilliqs',icon:'&#x1F4A1;', name:'Brilliqs',     region:'India',
+   desc:'Digital transformation and tech consulting -- product engineering and full-stack development building the custom technology layers that make Hive work.',
+   pills:['Product Engineering','Full-stack Dev','Digital Transformation'],
+   cat:'Regional Partner -- India',catC:'#f97316',catBg:'rgba(249,115,22,0.18)',url:'http://www.brilliqs.com',btn:'Visit brilliqs.com'},
+];
+var HIVE_KB = [
+  {
+    id:'paios', name:'PAIOS', icon:'&#x1F3ED;',
+    tagline:'Physical AI Operating System for your factory',
+    desc:'Connects every machine, diagnoses faults in seconds, shares solutions across factories. 94% downtime reduction.',
+    url:'paios.html',
+    section:'section-paios',
+    keywords:['factory','machine','downtime','fault','diagnosis','manufacturing','robot','plc','oee','telemetry','sensor','industrial','plant','maintenance','predictive','asset','production','line','equipment','repair']
+  },
+  {
+    id:'scade', name:'SCADE', icon:'&#x1F4A5;',
+    tagline:'Supply Chain Anomaly Detection -- blast radius engine',
+    desc:'Maps supply chain disruptions, surfaces substitutes, ranks fixes in under 2 minutes.',
+    url:'paios.html',
+    section:'section-scade',
+    keywords:['supply chain','supplier','disruption','logistics','parts','delay','shipment','inventory','freight','cargo','blast radius','mitigation','procurement','shortage','vessel','truck','transport','risk']
+  },
+  {
+    id:'friday', name:'Friday by Inspired One', icon:'&#x1F916;',
+    tagline:'Your AI Growth CoWorker',
+    desc:'Creates specialist AI coworkers -- GrowthAnalyst, RevenuePilot, OpsRunner -- for Sales, Marketing, Operations and more.',
+    url:'https://inspiredone.ai/friday',
+    section:'section-friday',
+    keywords:['coworker','assistant','workflow','automate','sales','marketing','operations','productivity','task','ai worker','agent','revenue','growth','business','team','collaborate','office','executive','crm','outreach']
+  },
+  {
+    id:'testfold', name:'Testfold', icon:'&#x1F9EA;',
+    tagline:'Verify the code your AI writes',
+    desc:'AI-powered testing that writes its own tests, self-heals selectors, runs on every PR. Works with GitHub, GitLab, Claude Code, Jenkins.',
+    url:'https://testfold.ai',
+    section:'section-testfold',
+    keywords:['testing','test','qa','quality','verification','code','deployment','bug','ci','cd','pipeline','github','gitlab','selenium','automation','regression','pr','pull request','software','devops','engineer','developer']
+  },
+  {
+    id:'macvaar', name:'Macvaar AI', icon:'&#x2764;',
+    tagline:'22 specialized medical AI agents',
+    desc:'Detects 2000+ cardiovascular diseases and 8+ cancer types. Cervix AI, Lung AI, Cardio AI, Skin AI and more.',
+    url:'https://macvaarai.com',
+    section:'section-macvaar',
+    keywords:['healthcare','medical','health','hospital','patient','cancer','cardio','diagnostic','clinical','doctor','disease','detection','lung','skin','ai health','pharma','wellness','diagnosis']
+  },
+  {
+    id:'taligens', name:'Taligens', icon:'&#x1F91D;',
+    tagline:'Strategy and culture change consulting',
+    desc:'Served 100+ organizations in 40+ countries. Commitment-Based Management. SAP, Oracle, Workday change programs.',
+    url:'https://taligens.com',
+    section:'section-taligens',
+    keywords:['culture','change','people','organization','strategy','leadership','transformation','erp','sap','oracle','workday','human','talent','adoption','resistance','alignment','mindset','behavior','training','hr']
+  },
+  {
+    id:'oip', name:'Open Innovation Partners', icon:'&#x1F4C8;',
+    tagline:'Lean Kaizen and AI digital transformation',
+    desc:'E2E process simplification, startup scouting, AI adoption. Collaboration with Japanese senseis and Silicon Valley VCs.',
+    url:'http://openinnovationpartners.com',
+    section:'section-oip',
+    keywords:['lean','kaizen','process','efficiency','waste','improvement','continuous','innovation','startup','digital transformation','simplification','operations','productivity','ai adoption','consulting','agile','six sigma','value stream']
+  },
+  {
+    id:'iam', name:'IAM Intelligence', icon:'&#x1F4BC;',
+    tagline:'AI readiness, strategy and ethics',
+    desc:'AI readiness roadmaps, algorithmic strategy, ethics and governance frameworks for enterprise AI adoption.',
+    url:'https://iam-intelligence.com',
+    section:'section-iam',
+    keywords:['ai strategy','ai readiness','ethics','governance','algorithm','compliance','policy','responsible ai','regulation','audit','risk','ai consulting','enterprise ai','advisory','framework']
+  },
+  {
+    id:'wx1', name:'WX1', icon:'&#x1F3E2;',
+    tagline:'Sovereign data centres -- Europe',
+    desc:'GDPR-compliant sovereign hosting, secure data centres across Europe. High-availability hybrid-cloud infrastructure.',
+    url:'https://wx1.de/en',
+    section:'section-wx1',
+    keywords:['hosting','infrastructure','server','cloud','data centre','gdpr','europe','germany','sovereign','security','compliance','hosting','colocation','hybrid','network','storage','compute']
+  },
+  {
+    id:'iscott', name:'iScottsberg', icon:'&#x1F30F;',
+    tagline:'Industrial automation -- Singapore and APAC',
+    desc:'SCADA/PLC systems, process control, semiconductor fab automation. Chemical dispensing, electrical/mechanical installations.',
+    url:'https://iscottsberg.com',
+    section:'section-iscott',
+    keywords:['singapore','apac','asia','southeast asia','automation','scada','plc','semiconductor','fab','chemical','industrial control','process control','electrical','mechanical','installation']
+  },
+  {
+    id:'aatek', name:'Aatek', icon:'&#x1F9BE;',
+    tagline:'Robotic automation -- Europe',
+    desc:'Physical AI integration, robotic automation, industrial engineering for demanding factory environments.',
+    url:'https://aatek.de',
+    section:'section-aatek',
+    keywords:['robot','robotics','automation','physical ai','europe','germany','industrial engineering','arm','cobots','machine','assembly','welding','picking','gripping']
+  },
+  {
+    id:'igebra', name:'iGebra.ai', icon:'&#x1F9D2;',
+    tagline:'Kids AI education platform',
+    desc:'EdTech AI making artificial intelligence accessible to the next generation. IT consulting and data science across USA and India.',
+    url:'https://www.igebra.ai',
+    section:'section-igebra',
+    keywords:['education','kids','edtech','school','learning','student','ai literacy','children','curriculum','teach','classroom','stem','coding','india','usa']
+  },
+  {
+    id:'moon', name:'Moon IT Solutions', icon:'&#x1F4BB;',
+    tagline:'Managed IT and cloud -- USA',
+    desc:'Managed IT services, cloud solutions and infrastructure security for enterprise deployments in the United States.',
+    url:'https://moonitsolutions.com',
+    section:'section-moon',
+    keywords:['managed it','cloud','infrastructure','security','helpdesk','network','microsoft','azure','aws','support','it services','usa','backup','monitoring','endpoint']
+  },
+  {
+    id:'aevolan', name:'Aevolan', icon:'&#x26A1;',
+    tagline:'Data engineering and cloud architecture',
+    desc:'Microsoft Fabric, Data Vault 2.0, Azure, Snowflake, PySpark. KODE methodology. Multi-LLM orchestration via Soamed AI.',
+    url:'https://www.aevolantech.com',
+    section:'section-aevolan',
+    keywords:['data engineering','data warehouse','azure','fabric','snowflake','pyspark','lakehouse','etl','pipeline','analytics','cloud architecture','microsoft','data vault','llm','orchestration','databricks']
+  },
+  {
+    id:'synth', name:'Synthesys', icon:'&#x2699;',
+    tagline:'Enterprise application development -- India',
+    desc:'Enterprise application development and systems integration for large-scale deployments across India.',
+    url:'http://www.synthesys.co.in',
+    section:'section-synth',
+    keywords:['enterprise','application','development','integration','software','india','erp','crm','system','implementation','custom','build','deploy']
+  },
+  {
+    id:'brilliqs', name:'Brilliqs', icon:'&#x1F4A1;',
+    tagline:'Product engineering and full-stack development',
+    desc:'Product engineering, full-stack development and digital transformation. Fast delivery, production-ready.',
+    url:'http://www.brilliqs.com',
+    section:'section-brilliqs',
+    keywords:['product','engineering','full stack','frontend','backend','mobile','app','web','react','node','api','mvp','build','develop','startup','digital','india']
+  }
+];
+
+/* ============================================================
+   COORDINATE SYSTEM - Single source of truth for ALL screens
+   
+   section height = window.innerHeight (set by JS, not CSS)
+   #cv = position:absolute; top:60px; bottom:0
+         => cv height = window.innerHeight - 60
+   
+   CX = window.innerWidth / 2
+   CY = (window.innerHeight - 60) / 2
+   
+   Hive: left=CX, top=CY in cv coords => visually centered ?
+   Hex/Bee positions: also in cv coords ?
+   ============================================================ */
+
+function CX(){ return window.innerWidth / 2; }
+function CY(){ return (window.innerHeight - 60) / 2; }
+
+/* ADAPTIVE SIZES - 3 tiers */
+function S(){
+  var w = window.innerWidth;
+  if(w <= 420) return {hHW:55,hHH:63,hexW:64,hexH:74,hexHW:32,hexHH:37,bHW:17,lH:12,svgW:110,svgH:126};
+  if(w <= 768) return {hHW:75,hHH:86,hexW:78,hexH:88,hexHW:39,hexHH:44,bHW:21,lH:15,svgW:150,svgH:172};
+  return            {hHW:80,hHH:91,hexW:82,hexH:94,hexHW:41,hexHH:47,bHW:22,lH:16,svgW:160,svgH:183};
+}
+
+/* RING RADII */
+function IR(){
+  var s=S();
+  var r = s.hHH + 16 + s.hexHH;
+  var maxR = Math.min(CX()-s.hexHW-8, CY()-s.hexHH-8);
+  return Math.max(Math.min(r, maxR), 90);
+}
+function OR(){
+  var s=S(), ir=IR();
+  var diag = Math.sqrt(s.hexW*s.hexW + s.hexH*s.hexH) / 2;
+  var minR = ir + diag + 10;
+  var maxR = Math.min(CX()-s.bHW-6, CY()-s.bHW-6);
+  return Math.min(Math.max(minR, minR), maxR);
+}
+
+/* POSITIONS - all in #cv coordinate space */
+function corePos(i,n){
+  var a=(i/n)*Math.PI*2-Math.PI/2, s=S(), r=IR();
+  return {x:CX()+Math.cos(a)*r-s.hexHW, y:CY()+Math.sin(a)*r-s.hexHH};
+}
+function beePos(i,n){
+  var a=(i/n)*Math.PI*2-Math.PI/2, s=S(), r=OR();
+  return {x:CX()+Math.cos(a)*r-s.bHW, y:CY()+Math.sin(a)*r-s.bHW-s.lH};
+}
+function homeP(isHex){
+  var s=S();
+  return isHex ? {x:CX()-s.hexHW, y:CY()-s.hexHH}
+               : {x:CX()-s.bHW,   y:CY()-s.bHW-s.lH};
+}
+
+/* SET SECTION HEIGHT - called before anything else */
+function setH(){
+  var sec=document.getElementById('hive-section');
+  if(sec) sec.style.height = window.innerHeight+'px';
+}
+
+/* POSITION HIVE at (CX, CY) in cv coords */
+function posHive(){
+  var hw=document.getElementById('hw'), hsv=document.getElementById('hsv');
+  if(!hw||!hsv) return;
+  var s=S();
+  hsv.setAttribute('width',s.svgW);
+  hsv.setAttribute('height',s.svgH);
+  hw.style.left = CX()+'px';
+  hw.style.top  = CY()+'px';
+}
+
+/* BEE SVG */
+function beeSVG(i){
+  return '<svg class="bsv" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%">'
+    +'<defs><linearGradient id="bg'+i+'" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stop-color="#fde68a"/><stop offset="100%" stop-color="#f59e0b"/></linearGradient></defs>'
+    +'<ellipse cx="13" cy="24" rx="11" ry="6.5" fill="rgba(186,230,255,0.8)" transform="rotate(-22,13,24)"/>'
+    +'<ellipse cx="47" cy="24" rx="11" ry="6.5" fill="rgba(186,230,255,0.8)" transform="rotate(22,47,24)"/>'
+    +'<ellipse cx="12" cy="31" rx="8.5" ry="5" fill="rgba(186,230,255,0.55)" transform="rotate(-16,12,31)"/>'
+    +'<ellipse cx="48" cy="31" rx="8.5" ry="5" fill="rgba(186,230,255,0.55)" transform="rotate(16,48,31)"/>'
+    +'<ellipse cx="30" cy="37" rx="11" ry="14" fill="url(#bg'+i+')"/>'
+    +'<rect x="19" y="33" width="22" height="5" rx="2.5" fill="#0a0500" opacity="0.6"/>'
+    +'<rect x="19" y="40" width="22" height="5" rx="2.5" fill="#0a0500" opacity="0.6"/>'
+    +'<circle cx="30" cy="20" r="9" fill="url(#bg'+i+')"/>'
+    +'<circle cx="26" cy="18" r="3" fill="#fff"/><circle cx="34" cy="18" r="3" fill="#fff"/>'
+    +'<circle cx="27" cy="18" r="1.7" fill="#050200"/><circle cx="35" cy="18" r="1.7" fill="#050200"/>'
+    +'<path d="M25 23 Q30 27 35 23" stroke="#78350f" stroke-width="1.5" fill="none" stroke-linecap="round"/>'
+    +'<line x1="25" y1="11" x2="21" y2="5" stroke="#0a0500" stroke-width="1.5" stroke-linecap="round"/>'
+    +'<line x1="35" y1="11" x2="39" y2="5" stroke="#0a0500" stroke-width="1.5" stroke-linecap="round"/>'
+    +'<circle cx="21" cy="4.5" r="2.4" fill="#f59e0b"/><circle cx="39" cy="4.5" r="2.4" fill="#f59e0b"/>'
+    +'<polygon points="30,51 27,57 33,57" fill="#b45309"/>'
+    +'</svg>';
+}
+
+/* BUILD */
+function build(){
+  var cv=document.getElementById('cv');
+  var hp=homeP(true), bp=homeP(false);
+  CORE.forEach(function(p,i){
+    if(document.getElementById('hx-'+p.id)) return;
+    var s=S(), el=document.createElement('div');
+    el.className='hxc'; el.id='hx-'+p.id;
+    el.style.width=s.hexW+'px'; el.style.height=s.hexH+'px';
+    el.style.left=hp.x+'px'; el.style.top=hp.y+'px';
+    el.innerHTML='<div class="hxi"><div class="hico">'+p.icon+'</div><div class="hnm">'+p.name+'</div><div class="hsb">'+p.sub+'</div></div>';
+    el.onclick=function(e){e.stopPropagation();oM(p.id);};
+    cv.appendChild(el);
+  });
+  PARTNERS.forEach(function(p,i){
+    if(document.getElementById('bp-'+p.id)) return;
+    var s=S(), el=document.createElement('div');
+    el.className='bep'; el.id='bp-'+p.id;
+    el.style.width=s.bHW*2+'px'; el.style.height=(s.bHW*2+s.lH)+'px';
+    el.style.left=bp.x+'px'; el.style.top=bp.y+'px';
+    el.style.animationDelay=(i*0.18)+'s';
+    el.innerHTML='<div class="bnt">'+p.name+'</div>'+beeSVG(i);
+    el.onclick=function(e){e.stopPropagation();oM(p.id);};
+    cv.appendChild(el);
+  });
+}
+
+/* OPEN */
+function openHive(){
+  if(isOpen) return;
+  isOpen=true;
+  posHive();
+  document.getElementById('hint').classList.add('hid');
+  document.getElementById('rb').classList.add('sh');
+  var hw=document.getElementById('hw');
+  hw.style.transition='transform 0.08s ease';
+  hw.style.transform='translate(-50%,-50%) rotate(-4deg) scale(1.04)';
+  setTimeout(function(){
+    hw.style.transition='transform 0.45s cubic-bezier(0.34,1.56,0.64,1)';
+    hw.style.transform='translate(-50%,-50%) rotate(0deg) scale(1)';
+  },80);
+  CORE.forEach(function(p,i){
+    var pos=corePos(i,CORE.length);
+    var el=document.getElementById('hx-'+p.id); if(!el) return;
+    el.style.transition='none';
+    el.style.left=pos.x+'px'; el.style.top=pos.y+'px';
+    void el.offsetWidth;
+    setTimeout(function(){ el.classList.add('bl'); },80+i*55);
+  });
+  setTimeout(function(){
+    PARTNERS.forEach(function(p,i){
+      var pos=beePos(i,PARTNERS.length);
+      var el=document.getElementById('bp-'+p.id); if(!el) return;
+      el.style.transition='none';
+      el.style.left=pos.x+'px'; el.style.top=pos.y+'px';
+      void el.offsetWidth;
+      el.classList.add('sc');
+    });
+  },320);
+}
+
+/* RESET */
+function resetHive(){
+  isOpen=false;
+  document.getElementById('hint').classList.remove('hid');
+  document.getElementById('rb').classList.remove('sh');
+  var hp=homeP(true), bp=homeP(false);
+  CORE.forEach(function(p){
+    var el=document.getElementById('hx-'+p.id); if(!el) return;
+    el.classList.remove('bl');
+    setTimeout(function(){ el.style.transition='none'; el.style.left=hp.x+'px'; el.style.top=hp.y+'px'; },300);
+  });
+  PARTNERS.forEach(function(p){
+    var el=document.getElementById('bp-'+p.id); if(!el) return;
+    el.classList.remove('sc');
+    setTimeout(function(){ el.style.transition='none'; el.style.left=bp.x+'px'; el.style.top=bp.y+'px'; },300);
+  });
+}
+
+/* RESIZE / ORIENTATIONCHANGE */
+window.addEventListener('resize', function(){
+  setH(); posHive();
+  if(isOpen){ resetHive(); setTimeout(openHive,200); }
+});
+window.addEventListener('orientationchange', function(){
+  setTimeout(function(){ setH(); posHive(); if(isOpen){ resetHive(); setTimeout(openHive,300); } },400);
+});
+
+/* MODAL */
+var SCROLL_MAP={fridayhex:'section-friday',mfg:'section-mfg',scade:'section-scade',wisdom:'section-wisdom',agents:'section-agents',conn:'section-conn',paios:'section-paios',wx1i:'section-wx1i',friday:'section-friday',iam:'section-iam',macvaar:'section-macvaar',oip:'section-oip',taligens:'section-taligens',igebra:'section-igebra',moon:'section-moon',iscott:'section-iscott',wx1:'section-wx1',aatek:'section-aatek',synth:'section-synth',brilliqs:'section-brilliqs',testfold:'section-testfold',aevolan:'section-aevolan'};
+
+function allData(){ var m={}; CORE.forEach(function(d){m[d.id]=d;}); PARTNERS.forEach(function(d){m[d.id]=d;}); return m; }
+
+function oM(key){
+  CURRENT_KEY=key; var d=allData()[key]; if(!d) return;
+  document.getElementById('mIc').innerHTML=d.icon;
+  document.getElementById('mTl').textContent=d.name+(d.region?' ('+d.region+')':d.sub?' - '+d.sub:'');
+  var ct=document.getElementById('mCt'); ct.textContent=d.cat; ct.style.background=d.catBg; ct.style.color=d.catC;
+  document.getElementById('mDs').textContent=d.desc;
+  var pl=document.getElementById('mPl'); pl.innerHTML='';
+  d.pills.forEach(function(p){ var s=document.createElement('span'); s.className='mpi'; s.textContent=p; s.style.background=d.catBg; s.style.color=d.catC; s.style.border='1px solid '+d.catC+'44'; pl.appendChild(s); });
+  var bn=document.getElementById('mBn'); bn.textContent=d.btn;
+  var cs=!d.url; bn.className='mbn'+(cs?' cs':'');
+  if(!cs){ bn.style.background=d.catC; bn.style.boxShadow='0 4px 14px '+d.catC+'44'; } else { bn.style.background=''; bn.style.boxShadow='none'; }
+  CU=d.url;
+  var sb=document.getElementById('mScr'); if(sb) sb.style.display=SCROLL_MAP[key]?'block':'none';
+  document.getElementById('mbd').classList.add('op');
+  document.body.style.overflow='hidden';
+}
+function vM(){
+  if(!CU) return;
+  if(CU==='paios.html') window.open('paios.html','_blank');
+  else { var a=document.createElement('a'); a.href=CU; a.target='_blank'; a.rel='noopener'; document.body.appendChild(a); a.click(); setTimeout(function(){ document.body.removeChild(a); },200); }
+}
+function scrollToSection(){
+  cM(); if(!CURRENT_KEY) return;
+  var sid=SCROLL_MAP[CURRENT_KEY]; if(!sid) return;
+  setTimeout(function(){
+    var el=document.getElementById(sid); if(!el) return;
+    window.scrollTo({top:el.getBoundingClientRect().top+window.scrollY-72,behavior:'smooth'});
+    el.style.transition='box-shadow 0.3s';
+    el.style.boxShadow='0 0 0 3px rgba(217,119,6,0.4),0 8px 32px rgba(15,23,42,0.1)';
+    setTimeout(function(){ el.style.boxShadow=''; },2500);
+  },300);
+}
+function cM(){ document.getElementById('mbd').classList.remove('op'); document.body.style.overflow=''; CU=null; }
+function cMBd(e){ if(e.target===document.getElementById('mbd')) cM(); }
+document.addEventListener('keydown',function(e){ if(e.key==='Escape') cM(); });
+
+/* BACK TO TOP */
+function backToTop(){
+  window.scrollTo({top:0,behavior:'smooth'});
+  setTimeout(function(){ if(!isOpen) openHive(); },700);
+}
+window.addEventListener('scroll',function(){
+  var b=document.getElementById('btt'); if(!b) return;
+  (window.pageYOffset>window.innerHeight*0.4)?b.classList.add('visible'):b.classList.remove('visible');
+},{passive:true});
+
+/* AGENT */
+function scoreP(p,q){ var ql=q.toLowerCase(),w=ql.split(/\\s+/),s=0; p.keywords.forEach(function(k){ if(ql.indexOf(k)>=0) s+=2; else w.forEach(function(wd){ if(k.indexOf(wd)>=0&&wd.length>2) s+=1; }); }); return s; }
+function agentSearch(){
+  var inp=document.getElementById('agent-input'),q=inp.value.trim(); if(!q) return;
+  addAMsg(q,'user'); inp.value='';
+  var sc=HIVE_KB.map(function(p){ return {p:p,s:scoreP(p,q)}; }).sort(function(a,b){ return b.s-a.s; });
+  var top=sc.filter(function(x){ return x.s>=2; }).slice(0,3);
+  var re=document.getElementById('agent-results'); re.innerHTML='';
+  if(!top.length){
+    addAMsg('Let us connect you directly with our team.','bot');
+    var c=document.createElement('div'); c.className='agent-result-card';
+    c.innerHTML='<div class="arc-top"><div class="arc-icon">&#x1F41D;</div><div><div class="arc-name">Talk to HiveWise</div><div class="arc-why">Our team will find the right fit for your needs.</div></div></div>';
+    var btns=document.createElement('div'); btns.className='arc-btns';
+    var ea=document.createElement('a'); ea.className='arc-btn primary'; ea.href='mailto:hive.wise@outlook.com?subject=HiveWise Enquiry&body=I need help with: '+encodeURIComponent(q); ea.textContent='Email us';
+    var ca=document.createElement('a'); ca.className='arc-btn secondary'; ca.href='#contact'; ca.textContent='Contact form'; ca.onclick=function(){ toggleAgent(); };
+    btns.appendChild(ea); btns.appendChild(ca); c.appendChild(btns); re.appendChild(c);
+  } else {
+    addAMsg((top.length===1?'Best match':'Top matches')+' for your need:','bot');
+    top.forEach(function(item){
+      var p=item.p, c=document.createElement('div'); c.className='agent-result-card';
+      var t=document.createElement('div'); t.className='arc-top';
+      var ic=document.createElement('div'); ic.className='arc-icon'; ic.innerHTML=p.icon;
+      var inf=document.createElement('div'); inf.innerHTML='<div class="arc-name">'+p.name+'</div><div class="arc-why">'+p.tagline+'</div>';
+      t.appendChild(ic); t.appendChild(inf); c.appendChild(t);
+      var btns=document.createElement('div'); btns.className='arc-btns';
+      var va=document.createElement('a'); va.className='arc-btn primary'; va.href=p.url; va.target='_blank'; va.textContent='Visit '+p.name;
+      var cb=document.createElement('button'); cb.className='arc-btn secondary'; cb.textContent='Connect via HiveWise';
+      (function(pn){ cb.onclick=function(){ toggleAgent(); setTimeout(function(){ var ct=document.getElementById('contact'); if(ct) window.scrollTo({top:ct.getBoundingClientRect().top+window.scrollY-72,behavior:'smooth'}); setTimeout(function(){ var sel=document.getElementById('hw-interest'); if(!sel) return; var f=pn.toLowerCase().split(' ')[0]; for(var j=0;j<sel.options.length;j++){ if(sel.options[j].text.toLowerCase().indexOf(f)>=0){ sel.selectedIndex=j; break; } } },600); },300); }; })(p.name);
+      btns.appendChild(va); btns.appendChild(cb); c.appendChild(btns); re.appendChild(c);
+    });
+    var rst=document.createElement('div'); rst.style.cssText='text-align:center;padding-top:4px';
+    rst.innerHTML='<button onclick="agentReset()" style="background:none;border:none;font-size:10px;color:#d97706;cursor:pointer;font-family:inherit;font-weight:600;">Ask another question</button>';
+    re.appendChild(rst);
+  }
+}
+function addAMsg(t,tp){ var m=document.getElementById('agent-msgs'),d=document.createElement('div'); d.className='agent-msg '+tp; d.textContent=t; m.appendChild(d); m.scrollTop=m.scrollHeight; }
+function agentReset(){ document.getElementById('agent-msgs').innerHTML='<div class="agent-msg bot">What else can I help you find?</div>'; document.getElementById('agent-results').innerHTML=''; document.getElementById('agent-input').focus(); }
+function toggleAgent(){
+  var p=document.getElementById('hive-agent-panel');
+  if(!agentOpen){ p.style.display='flex'; agentOpen=true; document.getElementById('agent-input').focus(); }
+  else{ p.style.display='none'; agentOpen=false; }
+}
+
+/* CONTACT FORM */
+var RESEND_READY = false;
+
+function hwSubmitForm() {
+  var fname    = document.getElementById('hw-fname').value.trim();
+  var lname    = document.getElementById('hw-lname').value.trim();
+  var email    = document.getElementById('hw-email').value.trim();
+  var company  = document.getElementById('hw-company').value.trim();
+  var industry = document.getElementById('hw-industry').value;
+  var interest = document.getElementById('hw-interest').value;
+  var message  = document.getElementById('hw-message').value.trim();
+  var errBox   = document.getElementById('cf-error');
+
+  errBox.style.display = 'none';
+
+  if (!fname || !lname || !email || !message) {
+    errBox.textContent = 'Please fill in all required fields marked with *.';
+    errBox.style.display = 'block';
+    return;
+  }
+  if (email.indexOf('@') < 1) {
+    errBox.textContent = 'Please enter a valid email address.';
+    errBox.style.display = 'block';
+    return;
+  }
+
+  var subject = 'HiveWise Enquiry - ' + (interest || 'General') + ' - ' + (company || (fname + ' ' + lname));
+  var bodyLines = [];
+  bodyLines.push('Name: ' + fname + ' ' + lname);
+  bodyLines.push('Email: ' + email);
+  bodyLines.push('Company: ' + (company || 'Not provided'));
+  bodyLines.push('Industry: ' + (industry || 'Not specified'));
+  bodyLines.push('Interested in: ' + (interest || 'Not specified'));
+  bodyLines.push('');
+  bodyLines.push('Message:');
+  bodyLines.push(message);
+  var body = bodyLines.join('%0D%0A');
+
+  window.location.href = 'mailto:hive.wise@outlook.com?subject=' + encodeURIComponent(subject) + '&body=' + body;
+
+  setTimeout(function() {
+    document.getElementById('cf-form-wrap').style.display = 'none';
+    document.getElementById('cf-success').style.display = 'block';
+  }, 800);
+}
+
+function hwResetForm() {
+  var ids = ['hw-fname','hw-lname','hw-email','hw-company','hw-message'];
+  ids.forEach(function(id){ document.getElementById(id).value = ''; });
+  document.getElementById('hw-industry').value = '';
+  document.getElementById('hw-interest').value = '';
+  document.getElementById('cf-success').style.display = 'none';
+  document.getElementById('cf-form-wrap').style.display = 'flex';
+}
+
+</script>
+
+<button id="btt" onclick="backToTop()" title="Back to top">&#x2191;</button>
+
+<script>
+/* Back to top + scroll listener */
+function backToTop(){
+  window.scrollTo({top:0, behavior:'smooth'});
+  setTimeout(function(){
+    if(!isOpen) openHive();
+    else {
+      var hsv = document.getElementById('hsv');
+      if(hsv){ hsv.style.filter='drop-shadow(0 0 52px rgba(196,154,40,0.65))'; setTimeout(function(){ hsv.style.filter=''; },800); }
+    }
+  }, 700);
+}
+
+function checkBtt(){
+  var btt = document.getElementById('btt');
+  if(!btt) return;
+  var scrolled = window.pageYOffset || document.documentElement.scrollTop || 0;
+  if(scrolled > window.innerHeight * 0.4){
+    btt.classList.add('visible');
+  } else {
+    btt.classList.remove('visible');
+  }
+}
+window.addEventListener('scroll', checkBtt, {passive:true});
+</script>
+
+
+<!-- ── HIVE AGENT ── -->
+<button id="hive-agent-btn" onclick="toggleAgent()" title="Ask HiveWise">
+  <div id="hive-agent-badge"></div>
+  &#x1F41D;
+</button>
+
+<div id="hive-agent-panel">
+  <div class="agent-header">
+    <div class="agent-header-icon">&#x1F41D;</div>
+    <div class="agent-header-text">
+      <div class="agent-header-title">HiveWise Assistant</div>
+      <div class="agent-header-sub">Tell me what you need</div>
+    </div>
+    <button class="agent-close" onclick="toggleAgent()">&#x2715;</button>
+  </div>
+
+  <div class="agent-messages" id="agent-msgs">
+    <div class="agent-msg bot">Hi! Describe what you are looking to do or the challenge you want to solve. I will connect you to the right part of the Hive.</div>
+  </div>
+
+  <div class="agent-results" id="agent-results"></div>
+
+  <div class="agent-input-wrap">
+    <input class="agent-input" id="agent-input" type="text"
+      placeholder="e.g. I need deployment testing..."
+      onkeydown="if(event.key==='Enter') agentSearch()">
+    <button class="agent-send" onclick="agentSearch()">&#x2192;</button>
+  </div>
+  <div class="agent-footer">Powered by HiveWise &#x1F41D;</div>
+</div>
+
+
+<script>
+var agentOpen = false;
+
+var HIVE_KB = [
+  {
+    id:'paios', name:'PAIOS', icon:'&#x1F3ED;',
+    tagline:'Physical AI Operating System for your factory',
+    desc:'Connects every machine, diagnoses faults in seconds, shares solutions across factories. 94% downtime reduction.',
+    url:'paios.html',
+    section:'section-paios',
+    keywords:['factory','machine','downtime','fault','diagnosis','manufacturing','robot','plc','oee','telemetry','sensor','industrial','plant','maintenance','predictive','asset','production','line','equipment','repair']
+  },
+  {
+    id:'scade', name:'SCADE', icon:'&#x1F4A5;',
+    tagline:'Supply Chain Anomaly Detection -- blast radius engine',
+    desc:'Maps supply chain disruptions, surfaces substitutes, ranks fixes in under 2 minutes.',
+    url:'paios.html',
+    section:'section-scade',
+    keywords:['supply chain','supplier','disruption','logistics','parts','delay','shipment','inventory','freight','cargo','blast radius','mitigation','procurement','shortage','vessel','truck','transport','risk']
+  },
+  {
+    id:'friday', name:'Friday by Inspired One', icon:'&#x1F916;',
+    tagline:'Your AI Growth CoWorker',
+    desc:'Creates specialist AI coworkers -- GrowthAnalyst, RevenuePilot, OpsRunner -- for Sales, Marketing, Operations and more.',
+    url:'https://inspiredone.ai/friday',
+    section:'section-friday',
+    keywords:['coworker','assistant','workflow','automate','sales','marketing','operations','productivity','task','ai worker','agent','revenue','growth','business','team','collaborate','office','executive','crm','outreach']
+  },
+  {
+    id:'testfold', name:'Testfold', icon:'&#x1F9EA;',
+    tagline:'Verify the code your AI writes',
+    desc:'AI-powered testing that writes its own tests, self-heals selectors, runs on every PR. Works with GitHub, GitLab, Claude Code, Jenkins.',
+    url:'https://testfold.ai',
+    section:'section-testfold',
+    keywords:['testing','test','qa','quality','verification','code','deployment','bug','ci','cd','pipeline','github','gitlab','selenium','automation','regression','pr','pull request','software','devops','engineer','developer']
+  },
+  {
+    id:'macvaar', name:'Macvaar AI', icon:'&#x2764;',
+    tagline:'22 specialized medical AI agents',
+    desc:'Detects 2000+ cardiovascular diseases and 8+ cancer types. Cervix AI, Lung AI, Cardio AI, Skin AI and more.',
+    url:'https://macvaarai.com',
+    section:'section-macvaar',
+    keywords:['healthcare','medical','health','hospital','patient','cancer','cardio','diagnostic','clinical','doctor','disease','detection','lung','skin','ai health','pharma','wellness','diagnosis']
+  },
+  {
+    id:'taligens', name:'Taligens', icon:'&#x1F91D;',
+    tagline:'Strategy and culture change consulting',
+    desc:'Served 100+ organizations in 40+ countries. Commitment-Based Management. SAP, Oracle, Workday change programs.',
+    url:'https://taligens.com',
+    section:'section-taligens',
+    keywords:['culture','change','people','organization','strategy','leadership','transformation','erp','sap','oracle','workday','human','talent','adoption','resistance','alignment','mindset','behavior','training','hr']
+  },
+  {
+    id:'oip', name:'Open Innovation Partners', icon:'&#x1F4C8;',
+    tagline:'Lean Kaizen and AI digital transformation',
+    desc:'E2E process simplification, startup scouting, AI adoption. Collaboration with Japanese senseis and Silicon Valley VCs.',
+    url:'http://openinnovationpartners.com',
+    section:'section-oip',
+    keywords:['lean','kaizen','process','efficiency','waste','improvement','continuous','innovation','startup','digital transformation','simplification','operations','productivity','ai adoption','consulting','agile','six sigma','value stream']
+  },
+  {
+    id:'iam', name:'IAM Intelligence', icon:'&#x1F4BC;',
+    tagline:'AI readiness, strategy and ethics',
+    desc:'AI readiness roadmaps, algorithmic strategy, ethics and governance frameworks for enterprise AI adoption.',
+    url:'https://iam-intelligence.com',
+    section:'section-iam',
+    keywords:['ai strategy','ai readiness','ethics','governance','algorithm','compliance','policy','responsible ai','regulation','audit','risk','ai consulting','enterprise ai','advisory','framework']
+  },
+  {
+    id:'wx1', name:'WX1', icon:'&#x1F3E2;',
+    tagline:'Sovereign data centres -- Europe',
+    desc:'GDPR-compliant sovereign hosting, secure data centres across Europe. High-availability hybrid-cloud infrastructure.',
+    url:'https://wx1.de/en',
+    section:'section-wx1',
+    keywords:['hosting','infrastructure','server','cloud','data centre','gdpr','europe','germany','sovereign','security','compliance','hosting','colocation','hybrid','network','storage','compute']
+  },
+  {
+    id:'iscott', name:'iScottsberg', icon:'&#x1F30F;',
+    tagline:'Industrial automation -- Singapore and APAC',
+    desc:'SCADA/PLC systems, process control, semiconductor fab automation. Chemical dispensing, electrical/mechanical installations.',
+    url:'https://iscottsberg.com',
+    section:'section-iscott',
+    keywords:['singapore','apac','asia','southeast asia','automation','scada','plc','semiconductor','fab','chemical','industrial control','process control','electrical','mechanical','installation']
+  },
+  {
+    id:'aatek', name:'Aatek', icon:'&#x1F9BE;',
+    tagline:'Robotic automation -- Europe',
+    desc:'Physical AI integration, robotic automation, industrial engineering for demanding factory environments.',
+    url:'https://aatek.de',
+    section:'section-aatek',
+    keywords:['robot','robotics','automation','physical ai','europe','germany','industrial engineering','arm','cobots','machine','assembly','welding','picking','gripping']
+  },
+  {
+    id:'igebra', name:'iGebra.ai', icon:'&#x1F9D2;',
+    tagline:'Kids AI education platform',
+    desc:'EdTech AI making artificial intelligence accessible to the next generation. IT consulting and data science across USA and India.',
+    url:'https://www.igebra.ai',
+    section:'section-igebra',
+    keywords:['education','kids','edtech','school','learning','student','ai literacy','children','curriculum','teach','classroom','stem','coding','india','usa']
+  },
+  {
+    id:'moon', name:'Moon IT Solutions', icon:'&#x1F4BB;',
+    tagline:'Managed IT and cloud -- USA',
+    desc:'Managed IT services, cloud solutions and infrastructure security for enterprise deployments in the United States.',
+    url:'https://moonitsolutions.com',
+    section:'section-moon',
+    keywords:['managed it','cloud','infrastructure','security','helpdesk','network','microsoft','azure','aws','support','it services','usa','backup','monitoring','endpoint']
+  },
+  {
+    id:'aevolan', name:'Aevolan', icon:'&#x26A1;',
+    tagline:'Data engineering and cloud architecture',
+    desc:'Microsoft Fabric, Data Vault 2.0, Azure, Snowflake, PySpark. KODE methodology. Multi-LLM orchestration via Soamed AI.',
+    url:'https://www.aevolantech.com',
+    section:'section-aevolan',
+    keywords:['data engineering','data warehouse','azure','fabric','snowflake','pyspark','lakehouse','etl','pipeline','analytics','cloud architecture','microsoft','data vault','llm','orchestration','databricks']
+  },
+  {
+    id:'synth', name:'Synthesys', icon:'&#x2699;',
+    tagline:'Enterprise application development -- India',
+    desc:'Enterprise application development and systems integration for large-scale deployments across India.',
+    url:'http://www.synthesys.co.in',
+    section:'section-synth',
+    keywords:['enterprise','application','development','integration','software','india','erp','crm','system','implementation','custom','build','deploy']
+  },
+  {
+    id:'brilliqs', name:'Brilliqs', icon:'&#x1F4A1;',
+    tagline:'Product engineering and full-stack development',
+    desc:'Product engineering, full-stack development and digital transformation. Fast delivery, production-ready.',
+    url:'http://www.brilliqs.com',
+    section:'section-brilliqs',
+    keywords:['product','engineering','full stack','frontend','backend','mobile','app','web','react','node','api','mvp','build','develop','startup','digital','india']
+  }
+];
+
+function scorePartner(partner, query){
+  var q = query.toLowerCase();
+  var words = q.split(/\s+/);
+  var score = 0;
+  partner.keywords.forEach(function(kw){
+    if(q.indexOf(kw) >= 0) score += 2;
+    else {
+      words.forEach(function(w){ if(kw.indexOf(w) >= 0 && w.length > 2) score += 1; });
+    }
+  });
+  return score;
+}
+
+function agentSearch(){
+  var input = document.getElementById('agent-input');
+  var query = input.value.trim();
+  if(!query) return;
+
+  // Show user message
+  addAgentMsg(query, 'user');
+  input.value = '';
+
+  // Score all partners
+  var scored = HIVE_KB.map(function(p){ return {p:p, s:scorePartner(p, query)}; });
+  scored.sort(function(a,b){ return b.s - a.s; });
+
+  var top = scored.filter(function(x){ return x.s >= 2; }).slice(0,3);
+
+  var resultsEl = document.getElementById('agent-results');
+  resultsEl.innerHTML = '';
+
+  if(top.length === 0){
+    // No match - direct to contact
+    addAgentMsg('Let us connect you directly with our team -- they will find the right fit for your needs.', 'bot');
+    var card = document.createElement('div');
+    card.className = 'agent-result-card';
+    card.innerHTML =
+      '<div class="arc-top"><div class="arc-icon">&#x1F41D;</div><div><div class="arc-name">Talk to HiveWise</div><div class="arc-why">Our team will match you to the right partner or product personally.</div></div></div>' +
+      '<div class="arc-btns">' +
+        '<a class="arc-btn primary" href="mailto:hive.wise@outlook.com?subject=HiveWise Enquiry&body=Hi, I need help with: ' + encodeURIComponent(query) + '">Email us</a>' +
+        '<a class="arc-btn secondary" href="#contact" onclick="toggleAgent()">Contact form</a>' +
+      '</div>';
+    resultsEl.appendChild(card);
+  } else {
+    var count = top.length === 1 ? 'Here is the best match' : 'Here are the top matches';
+    addAgentMsg(count + ' for your need:', 'bot');
+    top.forEach(function(item){
+      var p = item.p;
+      var card = document.createElement('div');
+      card.className = 'agent-result-card';
+      var visitUrl = p.url;
+      // Build card using DOM (no innerHTML escaping issues)
+      var arcTop = document.createElement('div');
+      arcTop.className = 'arc-top';
+      var iconEl = document.createElement('div');
+      iconEl.className = 'arc-icon';
+      iconEl.innerHTML = p.icon;
+      var infoEl = document.createElement('div');
+      var nameEl = document.createElement('div');
+      nameEl.className = 'arc-name';
+      nameEl.textContent = p.name;
+      var whyEl = document.createElement('div');
+      whyEl.className = 'arc-why';
+      whyEl.textContent = p.tagline;
+      infoEl.appendChild(nameEl);
+      infoEl.appendChild(whyEl);
+      arcTop.appendChild(iconEl);
+      arcTop.appendChild(infoEl);
+      card.appendChild(arcTop);
+      var arcBtns = document.createElement('div');
+      arcBtns.className = 'arc-btns';
+      var visitBtn = document.createElement('a');
+      visitBtn.className = 'arc-btn primary';
+      visitBtn.href = visitUrl;
+      visitBtn.target = '_blank';
+      visitBtn.textContent = 'Visit ' + p.name;
+      arcBtns.appendChild(visitBtn);
+      var connectBtn = document.createElement('button');
+      connectBtn.className = 'arc-btn secondary';
+      connectBtn.textContent = 'Connect via HiveWise';
+      (function(pname) {
+        connectBtn.onclick = function() {
+          toggleAgent();
+          setTimeout(function() {
+            var contact = document.getElementById('contact');
+            if(contact) { var top = contact.getBoundingClientRect().top + window.scrollY - 72; window.scrollTo({top:top,behavior:'smooth'}); }
+            setTimeout(function() {
+              var sel = document.getElementById('hw-interest');
+              if(!sel) return;
+              var first = pname.toLowerCase().split(' ')[0];
+              for(var j=0; j<sel.options.length; j++) {
+                if(sel.options[j].text.toLowerCase().indexOf(first) >= 0) { sel.selectedIndex=j; break; }
+              }
+            }, 600);
+          }, 300);
+        };
+      })(p.name);
+      arcBtns.appendChild(connectBtn);
+      card.appendChild(arcBtns);
+      resultsEl.appendChild(card);
+    });
+    // Reset option
+    var reset = document.createElement('div');
+    reset.style.cssText = 'text-align:center;padding-top:4px';
+    reset.innerHTML = '<button onclick="agentReset()" style="background:none;border:none;font-size:11px;color:#d97706;cursor:pointer;font-family:inherit;font-weight:600;">Ask another question &#x2192;</button>';
+    resultsEl.appendChild(reset);
+  }
+}
+
+function addAgentMsg(text, type){
+  var msgs = document.getElementById('agent-msgs');
+  var d = document.createElement('div');
+  d.className = 'agent-msg ' + type;
+  d.innerHTML = text;
+  msgs.appendChild(d);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+function agentReset(){
+  document.getElementById('agent-msgs').innerHTML = '<div class="agent-msg bot">What else can I help you find?</div>';
+  document.getElementById('agent-results').innerHTML = '';
+  document.getElementById('agent-input').focus();
+}
+
+function toggleAgent(){
+  var panel = document.getElementById('hive-agent-panel');
+  if(!agentOpen){
+    panel.style.display = 'flex';
+    setTimeout(function(){ panel.classList.add('open'); },10);
+    document.getElementById('agent-input').focus();
+    agentOpen = true;
+  } else {
+    panel.classList.remove('open');
+    setTimeout(function(){ panel.style.display = 'none'; },250);
+    agentOpen = false;
+  }
+}
+
+
+/* INIT - setH first, then build */
+// Run immediately (handles most cases)
+function init(){
+  setH();
+  posHive();
+  build();
+}
+
+// DOMContentLoaded - earliest safe moment
+document.addEventListener('DOMContentLoaded', init);
+
+// Also on load - fonts/images can shift layout
+window.addEventListener('load', function(){
+  setH(); posHive();
+});
+</script>
+</body>
+</html>
